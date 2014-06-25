@@ -19,8 +19,8 @@ This function returns a sparse logical matrix.
 Generate the sparse mapping matrix from a two-columns table.
 }
 \details{
-This function generates the sparse logical matrix from the two-columns table returned by \code{\link{toTable}}
-in Bioconductor package \code{\link{AnnotationDbi}}.
+This function generates the sparse logical matrix from the two-columns table returned by \code{\link[AnnotationDbi]{toTable}}
+in Bioconductor package \code{AnnotationDbi}.
 }
 \examples{
 \dontrun{
@@ -31,6 +31,6 @@ x <- toMatrix(toTable(org.Hs.egGO2ALLEGS))
 }
 }
 \seealso{
-\code{\link{toTable}}
+\code{\link[AnnotationDbi]{toTable}}
 }
 

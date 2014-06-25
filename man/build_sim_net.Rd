@@ -3,7 +3,7 @@
 \alias{build_sim_net}
 \title{Build the gene similarity network from annoations}
 \usage{
-build_sim_net(core.sets, kappa.threshold = 0.9, n.cpu = 1)
+build_sim_net(core.sets, kappa.threshold = 0.9)
 }
 \arguments{
 \item{core.sets}{Logical matrix indicated the core genes associated with specific functions or pathways.

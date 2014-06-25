@@ -38,6 +38,9 @@ approximate \code{\link{rmultihyper}}.}
 \item{z.threshold}{The threshold for filtering out small Z-scores. The p-values are calculated only
 for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
 
+\item{verbose}{Logical variable indicated whether output the full variables for computing p-value,
+such as mean and variance.}
+
 \item{adjust.p}{The method for adjusting p-values for multiple testing. Use "none" for bypassing.
 See \code{\link{p.adjust}} for available methods.}
 

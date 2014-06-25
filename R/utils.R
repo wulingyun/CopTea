@@ -1,104 +1,80 @@
-#' Read network information from text file
+#' Extract core sets information from GO annotation
+#'
+#' Generate the core sets matrix from an object of class "Go3AnnDbBimap" in Bioconductor annotation package.
+#'
+#' This function generates the \code{core.sets} matrix required by \code{\link{neeat}} method.
 #' 
-#' Read the network information from a text file with specific format.
+#' @param go.map An object of class "Go3AnnDbBimap".
+#' @param evidence Vector of string to filter the GO annotations, could be "ALL" or a set of evidence codes.
+#' @param category Vector of string to filter the GO categories, could be "ALL" or a set of GO categories.
+#' @param gene.set Vector of string to filter the genes.
 #' 
-#' This function reads the network information from a text file with specific format:
-#' each line contains two strings separated by spaces, which correspond to the 
-#' names of two end points of one edge in the network.
+#' @return This function returns a sparse matrix as required by \code{\link{neeat}} method.
 #' 
-#' @param file The name of text file
-#' @return A list with the following components:
-#'   \item{size}{The number of network nodes}
-#'   \item{node}{The vector of network node names}
-#'   \item{matrix}{The logical adjacency matrix}
+#' @seealso \code{\link{neeat}}
+#'
+#' @examples
 #' 
-#' @seealso \code{\link{write_net}}
-#' 
+#' \dontrun{
+#' source("http://bioconductor.org/biocLite.R")
+#' biocLite("org.Hs.eg.db")
+#' library(org.Hs.eg.db)
+#' x <- get_core_sets(org.Hs.egGO2ALLEGS)
+#' }
+#'
 #' @import Matrix
 #' 
 #' @export
-read_net <- function(file)
+get_core_sets <- function(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
 {
-  net.text <- as.matrix(read.table(file, fill=T, as.is=T, col.names=1:max(count.fields(file))))
-  net.node <- unique(as.character(net.text))
-  net.node <- net.node[net.node != ""]
-  net.edge <- cbind(as.character(net.text[,1]), as.character(net.text[,-1]))
-  net.edge <- net.edge[net.edge[,2] != "", ]
-  net.size <- length(net.node)
-  node.id <- seq_along(net.node)
-  names(node.id) <- net.node
-  net.matrix <- sparseMatrix(node.id[net.edge[,1]], node.id[net.edge[,2]], x=T, dims=c(net.size, net.size), dimnames=list(net.node, net.node))
-  list(size=net.size, node=net.node, matrix=net.matrix)
-}
-
-#' Write network information to text file
-#' 
-#' Write the network information to a text file with specific format.
-#' 
-#' This function writes the network information to a text file with specific format:
-#' each line contains two strings separated by spaces, which correspond to the
-#' names of two end points of one edge in the network.
-#' 
-#' @param net A list as returned by \code{\link{read_net}}
-#' @param file The name of text file
-#' 
-#' @seealso \code{\link{read_net}}
-#' 
-#' @import Matrix
-#' 
-#' @export
-write_net <- function(net, file)
-{
-  net.edge <- which(net$matrix != 0, arr.ind=1)
-  net.edge <- matrix(net$node[net.edge], ncol=2)
-  write.table(net.edge, file, quote=F, row.names=F, col.names=F)
-}
-
-#' Extract a column from a matrix
-#' 
-#' Extract a specified column from a sparse matrix rapidly
-#' 
-#' This function use faster extraction algorithm for the \code{\link[=CsparseMatrix-class]{CsparseMatrix}} class in the package \pkg{Matrix}.
-#' 
-#' @param m The matrix
-#' @param i The column index
-#' 
-#' @return This function will return the specified column as a vector of corresponding type.
-#' 
-#' @import Matrix
-#' 
-#' @export
-column <- function(m, i)
-{
-  if (inherits(m, "CsparseMatrix")) {
-    v <- vector(typeof(m@x), m@Dim[1])
-    p <- (m@p[i]+1):m@p[i+1]
-    if (p[1] <= p[length(p)])
-      v[m@i[p]+1] <- m@x[p]
+  term.table <- AnnotationDbi::toTable(go.map)
+  term.table[,1] <- toupper(term.table[,1])
+  
+  if (evidence != "ALL")
+    term.table <- term.table[term.table[,3] %in% evidence, ]
+  
+  if (category != "ALL")
+    term.table <- term.table[term.table[,4] %in% category, ]
+  
+  if (!is.null(gene.set)) {
+    all.gene <- gene.set    
   }
   else
-    v <- m[,i]
-  v
+    all.gene <- unique(term.table[,1])
+  
+  toMatrix(term.table, all.gene)
 }
 
-nnzero <- function(m, r, c)
+
+#' Transform the gene lists into the matrix of gene sets
+#'
+#' Generate the gene sets matrix from several gene lists.
+#'
+#' This function generates the \code{gene.sets} matrix required by \code{\link{neeat}} method.
+#' The name of each gene set is given by the name of corresponding component of \code{gene.lists},
+#' and assigned to the column of \code{gene.sets}.
+#' 
+#' @param gene.lists A list of vectors of gene ids.
+#' @param all.gene A vector of all gene ids.
+#' 
+#' @return This function returns a sparse matrix as required by \code{\link{neeat}} method.
+#' 
+#' @seealso \code{\link{neeat}}
+#'
+#' @import Matrix
+#' 
+#' @export
+get_gene_sets <- function(gene.lists, all.gene)
 {
-  in.r <- if (missing(r)) function(i) T else function(i) r[i]
-  in.c <- if (missing(c)) function(i) T else function(i) c[i]
-  fun <- function(i) if (m@p[i] < m@p[i+1]) (m@p[i]+1):m@p[i+1] else NULL
-  if (sum(r) == 0 || sum(c) == 0)
-    0
-  else if (inherits(m, "CsparseMatrix")) {
-    p <- unlist(lapply(which(c), fun))
-    sum(m@x[p[in.r(m@i[p]+1)]] != 0)
+  gene.set <- Matrix(F, nrow=length(all.gene), ncol=length(gene.lists), dimnames=list(all.gene, names(gene.lists)))
+  for (i in 1:length(gene.lists)) {
+    genes <- as.character(gene.lists[[i]])
+    genes <- genes[genes %in% all.gene]
+    gene.set[genes, i] <- T
   }
-  else if (inherits(m, "RsparseMatrix")) {
-    p <- unlist(lapply(which(r), fun))
-    sum(m@x[p[in.c(m@i[p]+1)]] != 0)
-  }
-  else
-    Matrix::nnzero(m[r,c])
+  gene.set
 }
+
 
 #' Cohen's kappa score
 #' 
