@@ -1,0 +1,8 @@
+syntax: glob
+src-i386/*
+src-x64/*
+.svn/*
+*.bak
+*.dll
+*.so
+*.o

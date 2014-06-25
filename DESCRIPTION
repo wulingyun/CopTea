@@ -1,0 +1,18 @@
+Package: NEEAT
+Version: 0.1-0
+Title: NEEAT - Network Enhanced Enrichment Analysis Tool
+Description: This package provides the network enhanced enrichment analysis
+    tool for biomedical research.
+Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
+    "wulingyun@gmail.com"))
+ByteCompile: TRUE
+Depends:
+    R (>= 3.0.2)
+Imports:
+    Matrix (>= 1.0-14),
+    parallel (>= 3.0.2)
+Suggests:
+    AnnotationDbi,
+    org.Hs.eg.db
+License: GPL (>= 2)
+URL: http://r-forge.r-project.org/projects/neeat/

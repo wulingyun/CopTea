@@ -1,0 +1,124 @@
+#' Read network information from text file
+#' 
+#' Read the network information from a text file with specific format.
+#' 
+#' This function reads the network information from a text file with specific format:
+#' each line contains two strings separated by spaces, which correspond to the 
+#' names of two end points of one edge in the network.
+#' 
+#' @param file The name of text file
+#' @return A list with the following components:
+#'   \item{size}{The number of network nodes}
+#'   \item{node}{The vector of network node names}
+#'   \item{matrix}{The logical adjacency matrix}
+#' 
+#' @seealso \code{\link{write_net}}
+#' 
+#' @import Matrix
+#' 
+#' @export
+read_net <- function(file)
+{
+  net.text <- as.matrix(read.table(file, fill=T, as.is=T, col.names=1:max(count.fields(file))))
+  net.node <- unique(as.character(net.text))
+  net.node <- net.node[net.node != ""]
+  net.edge <- cbind(as.character(net.text[,1]), as.character(net.text[,-1]))
+  net.edge <- net.edge[net.edge[,2] != "", ]
+  net.size <- length(net.node)
+  node.id <- seq_along(net.node)
+  names(node.id) <- net.node
+  net.matrix <- sparseMatrix(node.id[net.edge[,1]], node.id[net.edge[,2]], x=T, dims=c(net.size, net.size), dimnames=list(net.node, net.node))
+  list(size=net.size, node=net.node, matrix=net.matrix)
+}
+
+#' Write network information to text file
+#' 
+#' Write the network information to a text file with specific format.
+#' 
+#' This function writes the network information to a text file with specific format:
+#' each line contains two strings separated by spaces, which correspond to the
+#' names of two end points of one edge in the network.
+#' 
+#' @param net A list as returned by \code{\link{read_net}}
+#' @param file The name of text file
+#' 
+#' @seealso \code{\link{read_net}}
+#' 
+#' @import Matrix
+#' 
+#' @export
+write_net <- function(net, file)
+{
+  net.edge <- which(net$matrix != 0, arr.ind=1)
+  net.edge <- matrix(net$node[net.edge], ncol=2)
+  write.table(net.edge, file, quote=F, row.names=F, col.names=F)
+}
+
+#' Extract a column from a matrix
+#' 
+#' Extract a specified column from a sparse matrix rapidly
+#' 
+#' This function use faster extraction algorithm for the \code{\link[=CsparseMatrix-class]{CsparseMatrix}} class in the package \pkg{Matrix}.
+#' 
+#' @param m The matrix
+#' @param i The column index
+#' 
+#' @return This function will return the specified column as a vector of corresponding type.
+#' 
+#' @import Matrix
+#' 
+#' @export
+column <- function(m, i)
+{
+  if (inherits(m, "CsparseMatrix")) {
+    v <- vector(typeof(m@x), m@Dim[1])
+    p <- (m@p[i]+1):m@p[i+1]
+    if (p[1] <= p[length(p)])
+      v[m@i[p]+1] <- m@x[p]
+  }
+  else
+    v <- m[,i]
+  v
+}
+
+nnzero <- function(m, r, c)
+{
+  in.r <- if (missing(r)) function(i) T else function(i) r[i]
+  in.c <- if (missing(c)) function(i) T else function(i) c[i]
+  fun <- function(i) if (m@p[i] < m@p[i+1]) (m@p[i]+1):m@p[i+1] else NULL
+  if (sum(r) == 0 || sum(c) == 0)
+    0
+  else if (inherits(m, "CsparseMatrix")) {
+    p <- unlist(lapply(which(c), fun))
+    sum(m@x[p[in.r(m@i[p]+1)]] != 0)
+  }
+  else if (inherits(m, "RsparseMatrix")) {
+    p <- unlist(lapply(which(r), fun))
+    sum(m@x[p[in.c(m@i[p]+1)]] != 0)
+  }
+  else
+    Matrix::nnzero(m[r,c])
+}
+
+#' Cohen's kappa score
+#' 
+#' Calculate Cohen's kappa score for two vectors.
+#' 
+#' This function calculate Cohen's kappa score for two logical vectors.
+#' 
+#' @param x1 The first logical vector
+#' @param x2 The second logical vector
+#' 
+#' @return The Cohen's kappa score
+#' 
+#' @export
+kappa_score <- function(x1, x2)
+{
+  if (length(x1) != length(x2)) stop("x1 and x2 are not of same length!")
+  t <- length(x1)
+  p1 <- sum(x1)
+  p2 <- sum(x2)
+  p <- sum(x1 == x2) / t
+  e <- (p1*p2 + (t-p1)*(t-p2)) / t^2
+  (p-e) / (1-e)
+}
