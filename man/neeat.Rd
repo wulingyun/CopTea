@@ -6,7 +6,7 @@
 neeat(core.sets, gene.sets = NULL, net = NULL, subnet = NULL,
   depths = NULL, method = "gene", rho = 0.001, max.depth = 2,
   n.perm = 0, use.multinom = FALSE, z.threshold = 0, verbose = FALSE,
-  adjust.p = "BH", n.cpu = 1, batch.size = 5000)
+  adjust.p = "bonferroni", n.cpu = 1, batch.size = 5000)
 }
 \arguments{
 \item{core.sets}{Logical matrix indicated the core genes associated with specific functions or pathways.
@@ -30,7 +30,8 @@ Use "hyper" for traditional hypergeometric test, in which the network informatio
 
 \item{max.depth}{Integer for the maximum depth considered in the NEEAT models.}
 
-\item{n.perm}{The number of permutations for calculating p-values.}
+\item{n.perm}{The number of permutations for calculating p-values. Zero or negative number indicates
+calculating p-values by the exact algorithm.}
 
 \item{use.multinom}{Logical variable indicated whether use \code{\link{rmultinom}} to
 approximate \code{\link{rmultihyper}}.}

@@ -3,7 +3,7 @@
 \alias{neeat_depths}
 \title{Compute the node depths}
 \usage{
-neeat_depths(core.sets, net, max.depth)
+neeat_depths(core.sets, net, max.depth, n.cpu = 1)
 }
 \arguments{
 \item{core.sets}{Logical matrix indicated the core genes associated with specific functions or pathways.}
@@ -11,6 +11,8 @@ neeat_depths(core.sets, net, max.depth)
 \item{net}{The adjacent matrix of network.}
 
 \item{max.depth}{Integer for the maximum depth that will be computed.}
+
+\item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 }
 \value{
 This function returns a matrix with the same dimensions as \code{core.sets}, where the element
