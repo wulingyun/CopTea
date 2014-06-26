@@ -18,7 +18,8 @@
 #' Use "hyper" for traditional hypergeometric test, in which the network information is ignored.
 #' @param rho The weight parameter for depths.
 #' @param max.depth Integer for the maximum depth considered in the NEEAT models.
-#' @param n.perm The number of permutations for calculating p-values.
+#' @param n.perm The number of permutations for calculating p-values. Zero or negative number indicates
+#' calculating p-values by the exact algorithm.
 #' @param use.multinom Logical variable indicated whether use \code{\link{rmultinom}} to 
 #' approximate \code{\link{rmultihyper}}.
 #' @param z.threshold The threshold for filtering out small Z-scores. The p-values are calculated only
@@ -46,7 +47,7 @@
 #' @export
 neeat <- function(core.sets, gene.sets = NULL, net = NULL, subnet = NULL, depths = NULL,
                   method = "gene", rho = 0.001, max.depth = 2, n.perm = 0, use.multinom = FALSE,
-                  z.threshold = 0, verbose = FALSE, adjust.p = "BH", n.cpu = 1, batch.size = 5000)
+                  z.threshold = 0, verbose = FALSE, adjust.p = "bonferroni", n.cpu = 1, batch.size = 5000)
 {
   neeat.par <- new.env()
   neeat.par$rho = rho
