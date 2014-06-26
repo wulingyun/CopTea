@@ -48,10 +48,12 @@ double pmultihyper(double X, int K, int nM, int tM, int *M, double *W)
   else if (nM == 1) P = 1;
   else
   {
-    int Z = X / W[0];
+    int Z1 = ceil(X / W[0]) - 1;
+    int Z2 = (W[0] > W[1]) ? ceil((X - K * W[1]) / (W[0] - W[1])) : 0;
+    if (Z2 < 0) Z2 = 0;
     int tM0 = tM - M[0];
-    P = phyper(Z, M[0], tM0, K, 0, 0);
-    for (int i = Z; i >= 0; i--)
+    P = phyper(Z1, M[0], tM0, K, 0, 0);
+    for (int i = Z1; i >= Z2; i--)
     {
       P += dhyper(i, M[0], tM0, K, 0) * pmultihyper(X-i*W[0], K-i, nM-1, tM0, M+1, W+1);
     }
@@ -98,10 +100,12 @@ double pmultinom(double X, int K, int nM, int tM, int *M, double *W)
   else if (nM == 1) P = 1;
   else
   {
-    int Z = X / W[0];
+    int Z1 = ceil(X / W[0]) - 1;
+    int Z2 = (W[0] > W[1]) ? ceil((X - K * W[1]) / (W[0] - W[1])) : 0;
+    if (Z2 < 0) Z2 = 0;
     double prob = (double) M[0] / tM;
-    P = pbinom(Z, K, prob, 0, 0);
-    for (int i = Z; i >= 0; i--)
+    P = pbinom(Z1, K, prob, 0, 0);
+    for (int i = Z1; i >= Z2; i--)
     {
       P += dbinom(i, K, prob, 0) * pmultinom(X-i*W[0], K-i, nM-1, tM-M[0], M+1, W+1);
     }
