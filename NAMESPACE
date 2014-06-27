@@ -2,6 +2,7 @@
 
 export(build_sim_net)
 export(column)
+export(get_annotation)
 export(get_core_sets)
 export(get_gene_sets)
 export(kappa_score)
