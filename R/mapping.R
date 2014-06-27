@@ -19,8 +19,15 @@ id_mapping <- function(symbols, species = "Human")
   }
 
   id1 <- mapping(symbols, db.SYMBOL)
-  id2 <- mapping(symbols[!(symbols %in% names(id1))], db.ALIAS)
+  symbols <- symbols[!(symbols %in% names(id1))]
+  id2 <- mapping(symbols, db.ALIAS)
+  symbols <- symbols[!(symbols %in% names(id2))]
   
+  if (length(symbols) > 0)
+  {
+    warning("The following symbols can not be mapped: ", paste(symbols, collapse=" "))
+  }
+
   c(id1, id2)
 }
 
