@@ -21,7 +21,7 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
     require(org.Sc.sgd.db)
     pre <- "sce"
     taxonomy <- 4932
-    db.GO <- org.Sc.sgdGO2ALLEGS
+    db.GO <- org.Sc.sgdGO2ALLORFS
     db.PROT <- org.Sc.sgdENSEMBLPROT
   }
   else {
