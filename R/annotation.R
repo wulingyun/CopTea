@@ -69,3 +69,29 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
   
   data
 }
+
+
+#' Get significant term list
+#'
+#' Extract and rank the significant terms with p-values smaller than the given threshold.
+#'
+#' @param p.values The vector of p-values.
+#' @param term.info The matrix of term information with three columns: Term ID, Term category,
+#'  and Term description. The row names should be set as Term ID. 
+#'  See \code{\link{get_annotation}} for more information.
+#'
+#' @return This function returns a matrix with four columns: Rank, Term ID, Term category,
+#'  and Term description.
+#'  
+#' @seealso \code{\link{get_annotation}}
+#'
+#' @export
+get_significant_terms <- function(p.values, term.info, threshold = 0.05)
+{
+  p <- p.values[p.values <= threshold]
+  p <- p[order(p)]
+  id <- names(p)
+  rank <- data.frame(stringsAsFactors = F, Rank=1:length(p), ID=id, p=p, Category=term.info[id, 2], Term=term.info[id, 3])
+  rownames(rank) <- id
+  rank
+}
