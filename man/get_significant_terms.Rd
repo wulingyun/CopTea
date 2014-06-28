@@ -3,14 +3,18 @@
 \alias{get_significant_terms}
 \title{Get significant term list}
 \usage{
-get_significant_terms(p.values, term.info, threshold = 0.05)
+get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL)
 }
 \arguments{
 \item{p.values}{The vector of p-values.}
 
 \item{term.info}{The matrix of term information with three columns: Term ID, Term category,
- and Term description. The row names should be set as Term ID.
- See \code{\link{get_annotation}} for more information.}
+and Term description. The row names should be set as Term ID.
+See \code{\link{get_annotation}} for more information.}
+
+\item{threshold}{The threshold of significant p-value.}
+
+\item{filters}{The vector of term categories for filtering terms. Set NULL to disable filter.}
 }
 \value{
 This function returns a matrix with four columns: Rank, Term ID, Term category,

@@ -79,6 +79,8 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
 #' @param term.info The matrix of term information with three columns: Term ID, Term category,
 #'  and Term description. The row names should be set as Term ID. 
 #'  See \code{\link{get_annotation}} for more information.
+#' @param threshold The threshold of significant p-value.
+#' @param filters The vector of term categories for filtering terms. Set NULL to disable filter.
 #'
 #' @return This function returns a matrix with four columns: Rank, Term ID, Term category,
 #'  and Term description.
@@ -86,12 +88,13 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
 #' @seealso \code{\link{get_annotation}}
 #'
 #' @export
-get_significant_terms <- function(p.values, term.info, threshold = 0.05)
+get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters = NULL)
 {
   p <- p.values[p.values <= threshold]
   p <- p[order(p)]
   id <- names(p)
   rank <- data.frame(stringsAsFactors = F, Rank=1:length(p), ID=id, p=p, Category=term.info[id, 2], Term=term.info[id, 3])
   rownames(rank) <- id
+  if (!is.null(filters)) rank <- rank[rank$Category %in% filters, ]
   rank
 }
