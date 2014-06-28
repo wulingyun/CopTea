@@ -55,6 +55,17 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
   ppi <- toMatrix(ppi, string.id, string.id)
   
   data$network <- (data$gene2protein %*% ppi %*% t(data$gene2protein)) > 0
+
+  require(GO.db)
+  goterm <- AnnotationDbi::as.list(GOTERM)
+  goterm <- t(sapply(1:length(goterm), function(i) c(goterm[[i]]@GOID, goterm[[i]]@Ontology, goterm[[i]]@Term)))
+  kegg <- as.matrix(toTable(KEGGPATHID2NAME))
+  kegg[, 1] <- paste(pre, kegg[, 1], sep="")
+  kegg <- cbind(kegg[, 1], "KEGG", kegg[, 2])
+  
+  data$term.info <- rbind(goterm, kegg)
+  rownames(data$term.info) <- data$term.info[, 1]
+  colnames(data$term.info) <- c("ID", "Ontology", "Term")
   
   data
 }
