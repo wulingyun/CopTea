@@ -6,7 +6,7 @@
 neeat(core.sets, gene.sets = NULL, net = NULL, subnet = NULL,
   depths = NULL, method = "gene", rho = 0.001, max.depth = 2,
   n.perm = 0, use.multinom = FALSE, z.threshold = 0, verbose = FALSE,
-  adjust.p = "bonferroni", n.cpu = 1, batch.size = 5000)
+  n.cpu = 1, batch.size = 5000)
 }
 \arguments{
 \item{core.sets}{Logical matrix indicated the core genes associated with specific functions or pathways.
@@ -41,9 +41,6 @@ for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
 
 \item{verbose}{Logical variable indicated whether output the full variables for computing p-value,
 such as mean and variance.}
-
-\item{adjust.p}{The method for adjusting p-values for multiple testing. Use "none" for bypassing.
-See \code{\link{p.adjust}} for available methods.}
 
 \item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 

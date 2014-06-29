@@ -3,7 +3,8 @@
 \alias{get_significant_terms}
 \title{Get significant term list}
 \usage{
-get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL)
+get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL,
+  adjust.p = "bonferroni")
 }
 \arguments{
 \item{p.values}{The vector of p-values.}
@@ -15,6 +16,9 @@ See \code{\link{get_annotation}} for more information.}
 \item{threshold}{The threshold of significant p-value.}
 
 \item{filters}{The vector of term categories for filtering terms. Set NULL to disable filter.}
+
+\item{adjust.p}{The method for adjusting p-values for multiple testing. Use "none" for bypassing.
+See \code{\link{p.adjust}} for available methods.}
 }
 \value{
 This function returns a matrix with four columns: Rank, Term ID, Term category,

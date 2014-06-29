@@ -81,6 +81,8 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
 #'  See \code{\link{get_annotation}} for more information.
 #' @param threshold The threshold of significant p-value.
 #' @param filters The vector of term categories for filtering terms. Set NULL to disable filter.
+#' @param adjust.p The method for adjusting p-values for multiple testing. Use "none" for bypassing.
+#' See \code{\link{p.adjust}} for available methods.
 #'
 #' @return This function returns a matrix with four columns: Rank, Term ID, Term category,
 #'  and Term description.
@@ -88,13 +90,14 @@ get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 9
 #' @seealso \code{\link{get_annotation}}
 #'
 #' @export
-get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters = NULL)
+get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters = NULL, adjust.p = "bonferroni")
 {
-  p <- p.values[p.values <= threshold]
-  p <- p[order(p)]
-  id <- names(p)
-  rank <- data.frame(stringsAsFactors = F, Rank=1:length(p), ID=id, p=p, Category=term.info[id, 2], Term=term.info[id, 3])
-  rownames(rank) <- id
+  p <- data.frame(names(p.values), p.values, p.adjust(p.values, method = adjust.p), stringsAsFactors = F)
+  p <- p[p[, 3] <= threshold, ]
+  p <- p[order(p[, 3]), ]
+  rank <- cbind(1:nrow(p), p, term.info[p[, 1], c(2, 3)])
+  rownames(rank) <- rank[, 2]
+  colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")
   if (!is.null(filters)) rank <- rank[rank$Category %in% filters, ]
   rank
 }

@@ -26,8 +26,6 @@
 #' for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.
 #' @param verbose Logical variable indicated whether output the full variables for computing p-value,
 #' such as mean and variance.
-#' @param adjust.p The method for adjusting p-values for multiple testing. Use "none" for bypassing.
-#' See \code{\link{p.adjust}} for available methods.
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' @param batch.size The desired size of batches in the parallel computation.
 #' 
@@ -47,7 +45,7 @@
 #' @export
 neeat <- function(core.sets, gene.sets = NULL, net = NULL, subnet = NULL, depths = NULL,
                   method = "gene", rho = 0.001, max.depth = 2, n.perm = 0, use.multinom = FALSE,
-                  z.threshold = 0, verbose = FALSE, adjust.p = "bonferroni", n.cpu = 1, batch.size = 5000)
+                  z.threshold = 0, verbose = FALSE, n.cpu = 1, batch.size = 5000)
 {
   neeat.par <- new.env()
   neeat.par$rho = rho
@@ -89,7 +87,6 @@ neeat <- function(core.sets, gene.sets = NULL, net = NULL, subnet = NULL, depths
     output.names <- c("z.score", "p.value")
   result <- array(result, dim = c(length(output.names), dim(gene.sets)[2], dim(core.sets)[2]),
                   dimnames <- list(output.names, colnames(gene.sets), colnames(core.sets)))
-  result[2,,] <- p.adjust(result[2,,], method = adjust.p)
   result
 }
 
