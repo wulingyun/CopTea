@@ -1,7 +1,31 @@
 #' Get annotations from databases
+#' 
+#' Get the annotations needed for functional enrichment analysis from the databases, including GO
+#' and KEGG pathway annotations, gene to protein mapping, protein interaction network.
+#' 
+#' @param species A string indicated species name.
+#' @param STRING.version A string indicated the version number of STRING database used for 
+#' extracting protein interaction network.
+#' @param STRING.threshold A integer number (0-1000) indicated the threshold for extracting 
+#' network from STRING database.
+#' 
+#' @return This function will return a list with the following components:
+#'   \item{annotations}{A logical matrix indicated the annotations, with each row represents 
+#'   a gene and each column denotes a term. The row names and column names are set as the 
+#'   corresponding gene and term ID respectively.} 
+#'   \item{network}{A logical matrix indicated the interaction between genes, which is aggregated 
+#'   from the protein interaction network.}
+#'   \item{gene2protein}{A logical matrix indicated the mapping from gene to protein, with 
+#'   each row represents a gene and each column denotes a protein. The row names and column 
+#'   names are set as the corresponding gene and protein ID respectively.}
+#'   \item{genes}{A vector of gene IDs.}
+#'   \item{terms}{A vector of term IDs.}
+#'   \item{proteins}{A vector of protein IDs.}
+#'   \item{term.info}{A matrix of term information, with three columns: Term ID, Term category,
+#'   and Term description. The row names are set as Term ID.}
 #'
 #' @export
-get_annotation <- function(species, STRING.version = "9_1", STRING.threshold = 900)
+get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 900)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -100,4 +124,36 @@ get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters
   colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")
   if (!is.null(filters)) rank <- rank[rank$Category %in% filters, ]
   rank
+}
+
+
+#' Get annotated gene list
+#'
+#' Extract the genes associated with terms from the annotation matrix.
+#'
+#' @param annotations A logical matrix indicated the annotations, with each row represents a gene and each column denotes a term.
+#'  The row names and column names are set as the corresponding gene and term ID respectively.
+#'  See \code{\link{get_annotation}} for more information.
+#' @param species A string indicated the species name used for translating gene ID to symbols.
+#' @param gene.symbol A logical variable indicated whether use the gene symbol in the output instead of the central ID.
+#' 
+#' @return This function will return a vector of strings, which is the concatenated IDs (or symbols) of the genes annotated
+#' by the corresponding term.
+#'  
+#' @seealso \code{\link{get_annotation}}
+#'
+#' @export
+get_annotated_genes <- function(annotations, species = "Human", gene.symbol = TRUE)
+{
+  genes <- rownames(annotations)
+  if (gene.symbol) {
+    ids <- genes
+    symbols <- id_symbols(ids, species)
+    genes <- symbols[ids]
+    genes[is.na(genes)] <- ids[is.na(genes)]
+  }
+  terms <- colnames(annotations)
+  gene.list <- sapply(seq_along(terms), function(i) paste(genes[annotations[, i]], collapse=", "))
+  names(gene.list) <- terms
+  gene.list
 }
