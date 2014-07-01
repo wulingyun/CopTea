@@ -67,7 +67,7 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   
   require(reactome.db)
   reactome.id <- as.matrix(toTable(reactomePATHID2NAME))
-  reactome.id <- reactome.id[grepl(species.name, reactome.id[, 2]), 1]
+  reactome.id <- reactome.id[grepl(paste("^", species.name, sep=""), reactome.id[, 2]), 1]
   map.REACTOME <- as.matrix(toTable(reactomePATHID2EXTID))
   map.REACTOME <- map.REACTOME[, c(2,1)]
   map.REACTOME <- map.REACTOME[map.REACTOME[, 2] %in% reactome.id, ]
@@ -104,7 +104,7 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   
   require(reactome.db)
   reactome <- as.matrix(toTable(reactomePATHID2NAME))
-  reactome <- reactome[grepl(species.name, reactome[, 2]), ]
+  reactome <- reactome[grepl(paste("^", species.name, sep=""), reactome[, 2]), ]
   reactome[, 1] <- paste("Reactome", reactome[, 1], sep=":")
   reactome <- cbind(reactome[, 1], "Reactome", reactome[, 2])
     
