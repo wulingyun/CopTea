@@ -1,7 +1,7 @@
 #' Get annotations from databases
 #' 
 #' Get the annotations needed for functional enrichment analysis from the databases, including GO
-#' and KEGG pathway annotations, gene to protein mapping, protein interaction network.
+#' and KEGG/Reactome pathway annotations, gene to protein mapping, protein interaction network.
 #' 
 #' @param species A string indicated species name.
 #' @param STRING.version A string indicated the version number of STRING database used for 
@@ -29,22 +29,25 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
-    pre <- "hsa"
-    taxonomy <- 9606
+    species.name <- "Homo sapiens"
+    species.pre <- "hsa"
+    species.id <- 9606
     db.GO <- org.Hs.egGO2ALLEGS
     db.PROT <- org.Hs.egENSEMBLPROT
   }
   else if (species == "Mouse") {
     require(org.Mm.eg.db)
-    pre <- "mmu"
-    taxonomy <- 10090
+    species.name <- "Mus musculus"
+    species.pre <- "mmu"
+    species.id <- 10090
     db.GO <- org.Mm.egGO2ALLEGS
     db.PROT <- org.Mm.egENSEMBLPROT
   }
   else if (species == "Yeast") {
     require(org.Sc.sgd.db)
-    pre <- "sce"
-    taxonomy <- 4932
+    species.name <- "Saccharomyces cerevisiae"
+    species.pre <- "sce"
+    species.id <- 4932
     db.GO <- org.Sc.sgdGO2ALLORFS
     db.PROT <- org.Sc.sgdENSEMBLPROT
   }
@@ -54,13 +57,23 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   
   data <- list()
   
-  require(KEGG.db)
   map.GO <- as.matrix(toTable(db.GO))
   map.GO <- map.GO[, c(1,2)]
+  
+  require(KEGG.db)
   map.KEGG <- as.matrix(toTable(KEGGPATHID2EXTID))
-  map.KEGG <- cbind(map.KEGG[,2], map.KEGG[,1])
-  map.KEGG <- map.KEGG[grepl(pre, map.KEGG[,2]), ]
-  map <- rbind(map.GO, map.KEGG)
+  map.KEGG <- map.KEGG[, c(2,1)]
+  map.KEGG <- map.KEGG[grepl(species.pre, map.KEGG[,2]), ]
+  
+  require(reactome.db)
+  reactome.id <- as.matrix(toTable(reactomePATHID2NAME))
+  reactome.id <- reactome.id[grepl(species.name, reactome.id[, 2]), 1]
+  map.REACTOME <- as.matrix(toTable(reactomePATHID2EXTID))
+  map.REACTOME <- map.REACTOME[, c(2,1)]
+  map.REACTOME <- map.REACTOME[map.REACTOME[, 2] %in% reactome.id, ]
+  map.REACTOME[, 2] <- paste("Reactome", map.REACTOME[, 2], sep=":")
+  
+  map <- rbind(map.GO, map.KEGG, map.REACTOME)
 
   data$annotations <- toMatrix(map)
   data$genes <- rownames(data$annotations)
@@ -72,8 +85,8 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   data$gene2protein <- toMatrix(map, data$genes, data$proteins)
   
   require(STRINGdb)
-  string.id <- paste(taxonomy, data$proteins, sep=".")
-  string.db <- STRINGdb$new(version=STRING.version, species=taxonomy, score_threshold=STRING.threshold)
+  string.id <- paste(species.id, data$proteins, sep=".")
+  string.db <- STRINGdb$new(version=STRING.version, species=species.id, score_threshold=STRING.threshold)
   ppi <- string.db$get_interactions(string.id)
   ppi <- matrix(c(ppi[,1], ppi[,2], ppi[,2], ppi[,1]), ncol=2)
   ppi <- toMatrix(ppi, string.id, string.id)
@@ -83,13 +96,21 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   require(GO.db)
   goterm <- AnnotationDbi::as.list(GOTERM)
   goterm <- t(sapply(1:length(goterm), function(i) c(goterm[[i]]@GOID, goterm[[i]]@Ontology, goterm[[i]]@Term)))
+
+  require(KEGG.db)
   kegg <- as.matrix(toTable(KEGGPATHID2NAME))
-  kegg[, 1] <- paste(pre, kegg[, 1], sep="")
+  kegg[, 1] <- paste(species.pre, kegg[, 1], sep="")
   kegg <- cbind(kegg[, 1], "KEGG", kegg[, 2])
   
-  data$term.info <- rbind(goterm, kegg)
+  require(reactome.db)
+  reactome <- as.matrix(toTable(reactomePATHID2NAME))
+  reactome <- reactome[grepl(species.name, reactome[, 2]), ]
+  reactome[, 1] <- paste("Reactome", reactome[, 1], sep=":")
+  reactome <- cbind(reactome[, 1], "Reactome", reactome[, 2])
+    
+  data$term.info <- rbind(goterm, kegg, reactome)
   rownames(data$term.info) <- data$term.info[, 1]
-  colnames(data$term.info) <- c("ID", "Ontology", "Term")
+  colnames(data$term.info) <- c("ID", "Category", "Term")
   
   data
 }
