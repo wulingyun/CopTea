@@ -18,17 +18,15 @@ id_mapping <- function(symbols, species = "Human")
     stop("Unsupported species!")
   }
 
-  id1 <- mapping21(symbols, db.SYMBOL)
-  symbols <- symbols[!(symbols %in% names(id1))]
-  id2 <- mapping21(symbols, db.ALIAS)
-  symbols <- symbols[!(symbols %in% names(id2))]
+  id1 <- mapping(symbols, db.SYMBOL, 2, 1)
+  id2 <- mapping(id1$unmapped, db.ALIAS, 2, 1)
   
-  if (length(symbols) > 0)
+  if (length(id2$unmapped) > 0)
   {
-    warning("The following symbols can not be mapped: ", paste(symbols, collapse=" "))
+    warning("The following symbols can not be mapped: ", paste(id2$unmapped, collapse=" "))
   }
 
-  c(id1, id2)
+  c(id1$mapped, id2$mapped)
 }
 
 
@@ -50,33 +48,25 @@ id_symbols <- function(ids, species = "Human")
     stop("Unsupported species!")
   }
   
-  symbols <- mapping12(ids, db.SYMBOL)
-  ids <- ids[!(ids %in% names(symbols))]
+  id1 <- mapping(ids, db.SYMBOL, 1, 2)
   
-  if (length(ids) > 0)
+  if (length(id1$unmapped) > 0)
   {
-    warning("The following ids can not be mapped: ", paste(ids, collapse=" "))
+    warning("The following ids can not be mapped: ", paste(id1$unmapped, collapse=" "))
   }
   
-  symbols
+  id1$mapped
 }
 
 
-mapping12 <- function(id, db)
+mapping <- function(id, db, from = 1, to = 2)
 {
   map <- as.matrix(toTable(db))
-  match <- map[,1] %in% id
-  id <- map[match, 2]
-  names(id) <- map[match, 1]
-  id
-}
-
-
-mapping21 <- function(id, db)
-{
-  map <- as.matrix(toTable(db))
-  match <- map[,2] %in% id
-  id <- map[match, 1]
-  names(id) <- map[match, 2]
-  id
+  id <- toupper(id)
+  map[, from] <- toupper(map[, from])
+  match <- map[, from] %in% id
+  id.mapped <- map[match, to]
+  names(id.mapped) <- map[match, from]
+  id.unmapped <- id[!(id %in% names(id.mapped))]
+  list(mapped=id.mapped, unmapped=id.unmapped)
 }
