@@ -102,7 +102,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
 
   if ("OMIM" %in% filters && species == "Human") {
     map.OMIM <- as.matrix(toTable(org.Hs.egOMIM2EG))
-    map.OMIM[, 2] <- paste("OMIM", map.GO[, 2], sep=":")
+    map.OMIM[, 2] <- paste("OMIM", map.OMIM[, 2], sep=":")
     map <- rbind(map, map.OMIM)
   }
   

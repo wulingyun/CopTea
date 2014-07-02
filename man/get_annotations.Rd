@@ -25,8 +25,9 @@ This function will return a list with the following components:
   \item{annotations}{A logical matrix indicated the annotations, with each row represents
   a gene and each column denotes a term. The row names and column names are set as the
   corresponding gene and term ID respectively.}
-  \item{network}{A logical matrix indicated the interaction between genes, which is aggregated
-  from the protein interaction network.}
+  \item{network}{A logical matrix indicated the association (interaction) between genes,
+  which is aggregated from the protein association (interaction) network provided by the
+  STRING database.}
   \item{gene2protein}{A logical matrix indicated the mapping from gene to protein, with
   each row represents a gene and each column denotes a protein. The row names and column
   names are set as the corresponding gene and protein ID respectively.}
