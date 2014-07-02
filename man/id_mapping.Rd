@@ -3,7 +3,7 @@
 \alias{id_mapping}
 \title{Mapping gene symbols to central id}
 \usage{
-id_mapping(symbols, species = "Human")
+id_mapping(symbols, species = "Human", warning.unmapped = TRUE)
 }
 \description{
 Mapping gene symbols to central id

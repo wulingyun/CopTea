@@ -2,7 +2,7 @@
 #'
 #'
 #' @export
-id_mapping <- function(symbols, species = "Human")
+id_mapping <- function(symbols, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -21,7 +21,7 @@ id_mapping <- function(symbols, species = "Human")
   id1 <- mapping(symbols, db.SYMBOL, 2, 1)
   id2 <- mapping(id1$unmapped, db.ALIAS, 2, 1)
   
-  if (length(id2$unmapped) > 0)
+  if (warning.unmapped && length(id2$unmapped) > 0)
   {
     warning("The following symbols can not be mapped: ", paste(id2$unmapped, collapse=" "))
   }
@@ -34,7 +34,7 @@ id_mapping <- function(symbols, species = "Human")
 #'
 #'
 #' @export
-id_symbols <- function(ids, species = "Human")
+id_symbols <- function(ids, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -50,7 +50,7 @@ id_symbols <- function(ids, species = "Human")
   
   id1 <- mapping(ids, db.SYMBOL, 1, 2)
   
-  if (length(id1$unmapped) > 0)
+  if (warning.unmapped && length(id1$unmapped) > 0)
   {
     warning("The following ids can not be mapped: ", paste(id1$unmapped, collapse=" "))
   }
@@ -69,4 +69,19 @@ mapping <- function(id, db, from = 1, to = 2)
   names(id.mapped) <- map[match, from]
   id.unmapped <- id[!(id %in% names(id.mapped))]
   list(mapped=id.mapped, unmapped=id.unmapped)
+}
+
+
+#' Mapping gene central id from one species to other species
+#'
+#'
+#' @export
+id_mapping_species <- function(ids, species.from, species.to)
+{
+  symbols <- id_symbols(unique(ids), species.from)
+  genes <- id_mapping(symbols, species.to, F)
+  genes <- genes[symbols]
+  names(genes) <- names(symbols)
+  genes <- genes[!is.na(genes)]
+  genes
 }
