@@ -78,10 +78,11 @@ mapping <- function(id, db, from = 1, to = 2)
 #' @export
 id_mapping_species <- function(ids, species.from, species.to, rm.na = FALSE)
 {
-  symbols <- id_symbols(unique(ids), species.from)
+  ids <- unique(ids)
+  symbols <- id_symbols(ids, species.from, FALSE)
   genes <- id_mapping(symbols, species.to, FALSE)
-  genes <- genes[symbols]
-  names(genes) <- names(symbols)
+  genes <- genes[symbols[ids]]
+  names(genes) <- ids
   if (rm.na) genes <- genes[!is.na(genes)]
   genes
 }
