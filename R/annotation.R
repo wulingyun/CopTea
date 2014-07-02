@@ -61,7 +61,7 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
     require(org.Hs.eg.db)
     map.Human <- as.matrix(toTable(org.Hs.egGO2ALLEGS))
     map.Human <- map.Human[, c(1,2)]
-    genes <- id_mapping_species(map.Human[, 1], "Human", "Mouse")
+    genes <- id_mapping_species(map.Human[, 1], "Human", "Mouse", FALSE)
     map.Human[, 1] <- genes[map.Human[, 1]]
     map.Human <- map.Human[!is.na(map.Human[, 1]), ]
   }

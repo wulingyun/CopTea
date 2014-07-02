@@ -3,7 +3,7 @@
 \alias{id_mapping_species}
 \title{Mapping gene central id from one species to other species}
 \usage{
-id_mapping_species(ids, species.from, species.to)
+id_mapping_species(ids, species.from, species.to, rm.na = FALSE)
 }
 \description{
 Mapping gene central id from one species to other species
