@@ -56,6 +56,15 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   }
   
   data <- list()
+
+  require(org.Hs.eg.db)
+  map.Human <- as.matrix(toTable(org.Hs.egGO2ALLEGS))
+  map.Human <- map.Human[, c(1,2)]
+  symbols <- id_symbols(unique(map.Human[, 1]), "Human")
+  genes <- id_mapping(symbols, species)
+  genes <- genes[symbols]
+  names(genes) <- names(symbols)
+  map.Human[, 1] <- genes[map.Human[, 1]]
   
   map.GO <- as.matrix(toTable(db.GO))
   map.GO <- map.GO[, c(1,2)]
@@ -73,8 +82,8 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   map.REACTOME <- map.REACTOME[map.REACTOME[, 2] %in% reactome.id, ]
   map.REACTOME[, 2] <- paste("Reactome", map.REACTOME[, 2], sep=":")
   
-  map <- rbind(map.GO, map.KEGG, map.REACTOME)
-
+  map <- rbind(map.Human, map.GO, map.KEGG, map.REACTOME)
+  
   data$annotations <- toMatrix(map)
   data$genes <- rownames(data$annotations)
   data$terms <- colnames(data$annotations)
