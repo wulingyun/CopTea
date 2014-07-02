@@ -3,10 +3,16 @@
 \alias{get_annotations}
 \title{Get annotations from databases}
 \usage{
-get_annotations(species, STRING.version = "9_1", STRING.threshold = 900)
+get_annotations(species, filters = c("GO", "KEGG", "Reactome", "OMIM"),
+  STRING.version = "9_1", STRING.threshold = 900)
 }
 \arguments{
-\item{species}{A string indicated species name.}
+\item{species}{A string indicated species name, currently support \code{"Human"},
+\code{"Mouse"} and \code{"Yeast"}.}
+
+\item{filters}{A vector of string indicated the annotations used, currently support
+\code{"GO"}, \code{"KEGG"}, \code{"Reactome"}, and \code{"OMIM"} (only valid for
+Human).}
 
 \item{STRING.version}{A string indicated the version number of STRING database used for
 extracting protein interaction network.}

@@ -3,7 +3,11 @@
 #' Get the annotations needed for functional enrichment analysis from the databases, including GO
 #' and KEGG/Reactome pathway annotations, gene to protein mapping, protein interaction network.
 #' 
-#' @param species A string indicated species name.
+#' @param species A string indicated species name, currently support \code{"Human"}, 
+#' \code{"Mouse"} and \code{"Yeast"}.
+#' @param filters A vector of string indicated the annotations used, currently support
+#' \code{"GO"}, \code{"KEGG"}, \code{"Reactome"}, and \code{"OMIM"} (only valid for
+#' Human). 
 #' @param STRING.version A string indicated the version number of STRING database used for 
 #' extracting protein interaction network.
 #' @param STRING.threshold A integer number (0-1000) indicated the threshold for extracting 
@@ -13,8 +17,9 @@
 #'   \item{annotations}{A logical matrix indicated the annotations, with each row represents 
 #'   a gene and each column denotes a term. The row names and column names are set as the 
 #'   corresponding gene and term ID respectively.} 
-#'   \item{network}{A logical matrix indicated the interaction between genes, which is aggregated 
-#'   from the protein interaction network.}
+#'   \item{network}{A logical matrix indicated the association (interaction) between genes, 
+#'   which is aggregated from the protein association (interaction) network provided by the
+#'   STRING database.}
 #'   \item{gene2protein}{A logical matrix indicated the mapping from gene to protein, with 
 #'   each row represents a gene and each column denotes a protein. The row names and column 
 #'   names are set as the corresponding gene and protein ID respectively.}
@@ -25,7 +30,8 @@
 #'   and Term description. The row names are set as Term ID.}
 #'
 #' @export
-get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 900)
+get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM"),
+                            STRING.version = "9_1", STRING.threshold = 900)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -57,35 +63,48 @@ get_annotations <- function(species, STRING.version = "9_1", STRING.threshold = 
   
   data <- list()
 
-  if (species != "Human") {
-    require(org.Hs.eg.db)
-    map.Human <- as.matrix(toTable(org.Hs.egGO2ALLEGS))
-    map.Human <- map.Human[, c(1,2)]
-    genes <- id_mapping_species(map.Human[, 1], "Human", "Mouse", FALSE)
-    map.Human[, 1] <- genes[map.Human[, 1]]
-    map.Human <- map.Human[!is.na(map.Human[, 1]), ]
+  map <- NULL
+
+  if ("GO" %in% filters) {
+    if (species != "Human") {
+      require(org.Hs.eg.db)
+      map.Human <- as.matrix(toTable(org.Hs.egGO2ALLEGS))
+      map.Human <- map.Human[, c(1,2)]
+      genes <- id_mapping_species(map.Human[, 1], "Human", species, FALSE)
+      map.Human[, 1] <- genes[map.Human[, 1]]
+      map.Human <- map.Human[!is.na(map.Human[, 1]), ]
+      map <- rbind(map, map.Human)
+    }
+    
+    map.GO <- as.matrix(toTable(db.GO))
+    map.GO <- map.GO[, c(1,2)]
+    map <- rbind(map, map.GO)
   }
-  else {
-    map.Human <- NULL
+  
+  if ("KEGG" %in% filters) {
+    require(KEGG.db)
+    map.KEGG <- as.matrix(toTable(KEGGPATHID2EXTID))
+    map.KEGG <- map.KEGG[, c(2,1)]
+    map.KEGG <- map.KEGG[grepl(species.pre, map.KEGG[,2]), ]
+    map <- rbind(map, map.KEGG)
   }
   
-  map.GO <- as.matrix(toTable(db.GO))
-  map.GO <- map.GO[, c(1,2)]
-  
-  require(KEGG.db)
-  map.KEGG <- as.matrix(toTable(KEGGPATHID2EXTID))
-  map.KEGG <- map.KEGG[, c(2,1)]
-  map.KEGG <- map.KEGG[grepl(species.pre, map.KEGG[,2]), ]
-  
-  require(reactome.db)
-  reactome.id <- as.matrix(toTable(reactomePATHID2NAME))
-  reactome.id <- reactome.id[grepl(paste("^", species.name, sep=""), reactome.id[, 2]), 1]
-  map.REACTOME <- as.matrix(toTable(reactomePATHID2EXTID))
-  map.REACTOME <- map.REACTOME[, c(2,1)]
-  map.REACTOME <- map.REACTOME[map.REACTOME[, 2] %in% reactome.id, ]
-  map.REACTOME[, 2] <- paste("Reactome", map.REACTOME[, 2], sep=":")
-  
-  map <- rbind(map.Human, map.GO, map.KEGG, map.REACTOME)
+  if ("Reactome" %in% filters) {
+    require(reactome.db)
+    reactome.id <- as.matrix(toTable(reactomePATHID2NAME))
+    reactome.id <- reactome.id[grepl(paste("^", species.name, sep=""), reactome.id[, 2]), 1]
+    map.REACTOME <- as.matrix(toTable(reactomePATHID2EXTID))
+    map.REACTOME <- map.REACTOME[, c(2,1)]
+    map.REACTOME <- map.REACTOME[map.REACTOME[, 2] %in% reactome.id, ]
+    map.REACTOME[, 2] <- paste("Reactome", map.REACTOME[, 2], sep=":")
+    map <- rbind(map, map.REACTOME)
+  }
+
+  if ("OMIM" %in% filters && species == "Human") {
+    map.OMIM <- as.matrix(toTable(org.Hs.egOMIM2EG))
+    map.OMIM[, 2] <- paste("OMIM", map.GO[, 2], sep=":")
+    map <- rbind(map, map.OMIM)
+  }
   
   data$annotations <- toMatrix(map)
   data$genes <- rownames(data$annotations)
