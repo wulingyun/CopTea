@@ -151,7 +151,7 @@ get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters
 {
   p <- data.frame(names(p.values), p.values, p.adjust(p.values, method = adjust.p), stringsAsFactors = F)
   p <- p[p[, 3] <= threshold, ]
-  p <- p[order(p[, 3]), ]
+  p <- p[order(p[, 2]), ]
   rank <- cbind(1:nrow(p), p, term.info[p[, 1], c(2, 3)])
   rownames(rank) <- rank[, 2]
   colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")
