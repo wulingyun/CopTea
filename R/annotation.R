@@ -152,14 +152,14 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   
   if ("OMIM" %in% filters && species == "Human") {
     omim <- as.matrix(toTable(org.Hs.egOMIM2EG))
-    omim <- paste("OMIM", omim[, 2], sep=":")
+    omim <- unique(paste("OMIM", omim[, 2], sep=":"))
     omim <- cbind(omim, "OMIM", omim)
     term.info <- rbind(term.info, omim)
   }
   
   rownames(term.info) <- term.info[, 1]
   colnames(term.info) <- c("ID", "Category", "Term")
-  data$term.info <- term.info
+  data$term.info <- data.frame(term.info, stringsAsFactors=FALSE)
   
   data
 }
