@@ -124,24 +124,42 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   
   data$network <- (data$gene2protein %*% ppi %*% t(data$gene2protein)) > 0
 
-  require(GO.db)
-  goterm <- AnnotationDbi::as.list(GOTERM)
-  goterm <- t(sapply(1:length(goterm), function(i) c(goterm[[i]]@GOID, goterm[[i]]@Ontology, goterm[[i]]@Term)))
-
-  require(KEGG.db)
-  kegg <- as.matrix(toTable(KEGGPATHID2NAME))
-  kegg[, 1] <- paste(species.pre, kegg[, 1], sep="")
-  kegg <- cbind(kegg[, 1], "KEGG", kegg[, 2])
+  term.info <- NULL
   
-  require(reactome.db)
-  reactome <- as.matrix(toTable(reactomePATHID2NAME))
-  reactome <- reactome[grepl(paste("^", species.name, sep=""), reactome[, 2]), ]
-  reactome[, 1] <- paste("Reactome", reactome[, 1], sep=":")
-  reactome <- cbind(reactome[, 1], "Reactome", reactome[, 2])
-    
-  data$term.info <- rbind(goterm, kegg, reactome)
-  rownames(data$term.info) <- data$term.info[, 1]
-  colnames(data$term.info) <- c("ID", "Category", "Term")
+  if ("GO" %in% filters) {
+    require(GO.db)
+    goterm <- AnnotationDbi::as.list(GOTERM)
+    goterm <- t(sapply(1:length(goterm), function(i) c(goterm[[i]]@GOID, goterm[[i]]@Ontology, goterm[[i]]@Term)))
+    term.info <- rbind(term.info, goterm)
+  }
+  
+  if ("KEGG" %in% filters) {
+    require(KEGG.db)
+    kegg <- as.matrix(toTable(KEGGPATHID2NAME))
+    kegg[, 1] <- paste(species.pre, kegg[, 1], sep="")
+    kegg <- cbind(kegg[, 1], "KEGG", kegg[, 2])
+    term.info <- rbind(term.info, kegg)
+  }
+
+  if ("Reactome" %in% filters) {
+    require(reactome.db)
+    reactome <- as.matrix(toTable(reactomePATHID2NAME))
+    reactome <- reactome[grepl(paste("^", species.name, sep=""), reactome[, 2]), ]
+    reactome[, 1] <- paste("Reactome", reactome[, 1], sep=":")
+    reactome <- cbind(reactome[, 1], "Reactome", reactome[, 2])
+    term.info <- rbind(term.info, reactome)
+  }
+  
+  if ("OMIM" %in% filters && species == "Human") {
+    omim <- as.matrix(toTable(org.Hs.egOMIM2EG))
+    omim <- paste("OMIM", omim[, 2], sep=":")
+    omim <- cbind(omim, "OMIM", omim)
+    term.info <- rbind(term.info, omim)
+  }
+  
+  rownames(term.info) <- term.info[, 1]
+  colnames(term.info) <- c("ID", "Category", "Term")
+  data$term.info <- term.info
   
   data
 }
@@ -171,7 +189,7 @@ get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters
   p <- data.frame(names(p.values), p.values, p.adjust(p.values, method = adjust.p), stringsAsFactors = F)
   p <- p[p[, 3] <= threshold, ]
   p <- p[order(p[, 2]), ]
-  rank <- cbind(1:nrow(p), p, term.info[p[, 1], c(2, 3)])
+  rank <- cbind(seq_len(nrow(p)), p, term.info[p[, 1], c(2, 3)])
   rownames(rank) <- rank[, 2]
   colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")
   if (!is.null(filters)) rank <- rank[rank$Category %in% filters, ]
