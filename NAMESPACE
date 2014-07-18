@@ -2,6 +2,7 @@
 
 export(build_sim_net)
 export(column)
+export(get_GO_leafs)
 export(get_annotated_genes)
 export(get_annotations)
 export(get_core_sets)

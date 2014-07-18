@@ -227,3 +227,33 @@ get_annotated_genes <- function(annotations, species = "Human", gene.symbol = TR
   names(gene.list) <- terms
   gene.list
 }
+
+
+#' Get GO leaf terms
+#'
+#' Extract the leaf terms from the specific GO domains.
+#'
+#' @param domains A vector of strings indicated the specific GO domains, possible values include
+#'  \code{"BP"}, \code{"CC"}, and \code{"MF"}.
+#' 
+#' @return This function will return a vector of strings, which is the GO IDs of extracted terms.
+#'  
+#' @export
+get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
+{
+  require(GO.db)
+  terms <- NULL
+  if ("BP" %in% domains) {
+    x <- is.na(AnnotationDbi::as.list(GOBPOFFSPRING))
+    terms <- c(terms, names(x)[x])
+  }
+  if ("CC" %in% domains) {
+    x <- is.na(AnnotationDbi::as.list(GOCCOFFSPRING))
+    terms <- c(terms, names(x)[x])
+  }
+  if ("MF" %in% domains) {
+    x <- is.na(AnnotationDbi::as.list(GOMFOFFSPRING))
+    terms <- c(terms, names(x)[x])
+  }
+  terms
+}
