@@ -26,23 +26,28 @@ ceat <- function(core.sets, gene.set)
   addColsGLPK(prob, M+N)
   setRowsNamesGLPK(prob, 1:(2*N+1), c(paste("C1_", 1:N, ""), paste("C2_", 1:N, ""), "C3"))
   setColsNamesGLPK(prob, 1:(M+N), c(paste("X_", 1:M, ""), paste("Y_", 1:N, "")))
-  setColsKindsGLPK(prob, 1:(M+N), GLP_BV)
+  setColsKindGLPK(prob, 1:(M+N), c(rep(GLP_CV, M), rep(GLP_BV, N)))
 
-  setRowsBndsGLPK(prob, 1:(2*N+1), 0, 0, c(rep(GLP_LO, N), rep(GLP_UP, N), GLP_LO))
-  setColsBndsObjCoefsGLPK(prob, 1:(M+N), 0, 1, c(rep(1/(M+1), M), 1-gene.set))
+  setRowsBndsGLPK(prob, 1:(2*N+1), rep(0, 2*N+1), rep(0, 2*N+1), c(rep(GLP_LO, N), rep(GLP_UP, N), GLP_LO))
+  setColsBndsObjCoefsGLPK(prob, 1:(M+N), rep(0, M+N), rep(1, M+N), c(rep(1/(M*10), M), 1-gene.set))
   
-  ia <- c(A[,1], 1:N,         N+A[,1], (N+1):(N+N), rep(2*N+1, N))
+  ia <- c(A[,1], 1:N,         A[,1]+N, (N+1):(N+N), rep(2*N+1, N))
   ja <- c(A[,2], (M+1):(M+N), A[,2],   (M+1):(M+N), (M+1):(M+N))
   aa <- c(rep(1, nA), rep(-1, N), rep(1, nA), rep(-M, N), gene.set)
   loadMatrixGLPK(prob, length(aa), ia, ja, aa)
+
+  setMIPParmGLPK(PRESOLVE, GLP_ON)
+
+  solution <- list()
+  objvalue <- list()
   
   nG <- sum(gene.set)
-  solution <- list()
-  for (i in 1:nG)
+  for (i in nG:1)
   {
-    setRowBndGLPK(prob, 2*N+1, i, 0, GLP_LO)
+    setRowBndGLPK(prob, 2*N+1, GLP_LO, i, i)
     solveMIPGLPK(prob)
-    solution[[i]] <- getColsPrimGLPK(prob)
+    solution[[i]] <- mipColsValGLPK(prob)
+    objvalue[[i]] <- mipObjValGLPK(prob)
   }
-  solution
+  list(solution=solution, objvalue=objvalue)
 }
