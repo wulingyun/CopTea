@@ -10,7 +10,7 @@
 #' @import Matrix glpkAPI
 #'
 #' @export
-ceat <- function(core.sets, gene.set)
+ceat <- function(core.sets, gene.set, MIP=FALSE)
 {
   A <- which(core.sets != 0, arr.ind = T)
   nA <- dim(A)[1]
@@ -36,6 +36,8 @@ ceat <- function(core.sets, gene.set)
   aa <- c(rep(1, nA), rep(-1, N), rep(1, nA), rep(-M, N), gene.set, 1-gene.set)
   loadMatrixGLPK(prob, length(aa), ia, ja, aa)
 
+  if (MIP) setMIPParmGLPK(PRESOLVE, GLP_ON)
+  
   solution <- list()
   objvalue <- list()
   
@@ -45,9 +47,18 @@ ceat <- function(core.sets, gene.set)
   {
     setRowBndGLPK(prob, 2*N+1, GLP_LO, i, i)
     setRowBndGLPK(prob, 2*N+2, GLP_UP, B, B)
-    solveSimplexGLPK(prob)
-    solution[[i]] <- getColsPrimGLPK(prob)
-    objvalue[[i]] <- getObjValGLPK(prob)
+    if (MIP)
+    {
+      solveMIPGLPK(prob)
+      solution[[i]] <- mipColsValGLPK(prob)
+      objvalue[[i]] <- mipObjValGLPK(prob)
+    }
+    else
+    {
+      solveSimplexGLPK(prob)
+      solution[[i]] <- getColsPrimGLPK(prob)
+      objvalue[[i]] <- getObjValGLPK(prob)
+    }
     B <- sum((1-gene.set) * solution[[i]][(M+1):(M+N)])
   }
   list(solution=solution, objvalue=objvalue)
