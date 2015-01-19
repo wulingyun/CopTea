@@ -4,7 +4,7 @@
 \alias{ceat}
 \title{Combination enrichment analysis tool}
 \usage{
-ceat(core.sets, gene.set, MIP = FALSE)
+ceat(core.sets, gene.set, method = "LP1")
 }
 \description{
 Functional combination enrichment anslysis of gene sets
