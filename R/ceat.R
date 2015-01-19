@@ -121,16 +121,13 @@ ceat.rounding <- function(solution, core.sets, gene.set, alpha)
   M <- dim(core.sets)[2]
   xx <- solution[1:M]
   yy <- solution[(M+1):(M+N)]
-  a_g <- 1 / (sum(gene.set) - alpha + 1)
-  y <- yy
-  y[y >= a_g] <- 1
-  y[y < a_g] <- 0
-  f_j <- yy / rowSums(core.sets)
-  f_j[y < 1] <- Inf
-  f_i <- colSums(t(t(core.sets) * xx) >= f_j)
-  x <- xx
-  x[f_i >= 1] <- 1
-  x[f_i < 1] <- 0
+  y <- rep(0, length(yy))
+  y[order(yy, decreasing=T)[1:alpha]] <- 1
+  x <- rep(0, length(xx))
+  for (j in which(y == 1))
+  {
+    x[which.max(core.sets[j, ] * xx)] <- 1
+  }
   g_j <- as.numeric(core.sets %*% x)
   y[g_j >= 1] <- 1
   y[g_j < 1] <- 0
