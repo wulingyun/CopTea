@@ -4,7 +4,24 @@
 \alias{ceat}
 \title{Combination enrichment analysis tool}
 \usage{
-ceat(core.sets, gene.set, method = "LP1")
+ceat(core.sets, gene.set, method = "LP1", verbose = 1)
+}
+\arguments{
+\item{core.sets}{Logical matrix indicated the core genes associated with specific functions or pathways.
+The rows correspond to genes, while the columns represent the functions or pathways.}
+
+\item{gene.set}{Logical vector indicated the gene set for evaluating.}
+
+\item{method}{The method to solve the optimization problem: "MIP" - mixed integer programming;
+"LP1" - LP rounding model 1; "LP2" - LP rounding model 2.}
+
+\item{verbose}{The message output level: 0 - no output; 1 - warning and error only;
+ 2 - normal output; 3 - full output; 4 - debug output. Default: 1;}
+}
+\value{
+This function will return a list with two components:
+  \item{\code{solution}}{The list of solutions for each coverage level.}
+  \item{\code{objvalue}}{The list of objective values for each coverage level.}
 }
 \description{
 Functional combination enrichment anslysis of gene sets
