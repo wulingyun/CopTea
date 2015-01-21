@@ -7,8 +7,8 @@
 #' @param core.sets Logical matrix indicated the core genes associated with specific functions or pathways.
 #'  The rows correspond to genes, while the columns represent the functions or pathways.
 #' @param gene.set Logical vector indicated the gene set for evaluating. 
-#' @param method The method to solve the optimization problem: "MIP" - mixed integer programming;
-#'  "LP1" - LP rounding model 1; "LP2" - LP rounding model 2.
+#' @param method The method to solve the optimization problem: "MIP" - mixed integer programming (MIP) model 1;
+#'  "MIP2" - MIP model 2; "LP" - linear programming relaxation and rounding (LPRR) model 1; "LP2" - LPRR model 2.
 #' @param verbose The message output level: 0 - no output; 1 - warning and error only;
 #'  2 - normal output; 3 - full output; 4 - debug output. Default: 1;
 #'
@@ -45,7 +45,7 @@ ceat <- function(core.sets, gene.set, method="LP1", verbose=1)
     
     addColsGLPK(prob, M+N)
     setColsNamesGLPK(prob, 1:(M+N), c(paste("X_", 1:M, ""), paste("Y_", 1:N, "")))
-    setColsKindGLPK(prob, 1:(M+N), c(rep(GLP_BV, M), rep(GLP_BV, N)))
+    setColsKindGLPK(prob, 1:(M+N), rep(GLP_BV, M+N))
     setColsBndsObjCoefsGLPK(prob, 1:(M+N), rep(0, M+N), rep(1, M+N), c(rep(1/(M^2), M), 1-gene.set))
     
     ia <- c(A[,1], 1:N,         A[,1]+N, (N+1):(N+N), rep(2*N+1, N), rep(2*N+2, N))
@@ -67,7 +67,7 @@ ceat <- function(core.sets, gene.set, method="LP1", verbose=1)
       B <- (1-gene.set) %*% solution[[i]][(M+1):(M+N)]
     }
   }
-  else if (method == "LP1")
+  else if (method == "LP")
   {
     addRowsGLPK(prob, 2*N+1)
     setRowsNamesGLPK(prob, 1:(2*N+1), c(paste("C1_", 1:N, ""), paste("C2_", 1:N, ""), "C3"))
@@ -89,10 +89,39 @@ ceat <- function(core.sets, gene.set, method="LP1", verbose=1)
     {
       setRowBndGLPK(prob, 2*N+1, GLP_LO, i, i)
       solveSimplexGLPK(prob)
-      print(i)
       solution[[i]] <- ceat.rounding(getColsPrimGLPK(prob), core.sets, gene.set, i)
       objvalue[[i]] <- ceat.evaluate(solution[[i]], core.sets, gene.set)
       ceat.check(solution[[i]], core.sets, gene.set, i)
+    }
+  }
+  else if (method == "MIP2")
+  {
+    addRowsGLPK(prob, N+nA+2)
+    setRowsNamesGLPK(prob, 1:(N+nA+2), c(paste("C1_", 1:N, ""), paste("C2_", 1:nA, ""), "C3", "C4"))
+    setRowsBndsGLPK(prob, 1:(N+nA+2), rep(0, N+nA+2), rep(0, N+nA+2), c(rep(GLP_LO, N), rep(GLP_UP, nA), GLP_LO, GLP_UP))
+    
+    addColsGLPK(prob, M+N)
+    setColsNamesGLPK(prob, 1:(M+N), c(paste("X_", 1:M, ""), paste("Y_", 1:N, "")))
+    setColsKindGLPK(prob, 1:(M+N), rep(GLP_BV, M+N))
+    setColsBndsObjCoefsGLPK(prob, 1:(M+N), rep(0, M+N), rep(1, M+N), c(rep(1/(M^2), M), 1-gene.set))
+    
+    ia <- c(A[,1], 1:N,         (1:nA)+N, (1:nA)+N, rep(N+nA+1, N), rep(N+nA+2, N))
+    ja <- c(A[,2], (M+1):(M+N), A[,2],    A[,1]+M,  (M+1):(M+N),    (M+1):(M+N))
+    aa <- c(rep(1, nA), rep(-1, N), rep(1, nA), rep(-1, nA), gene.set, 1-gene.set)
+    loadMatrixGLPK(prob, length(aa), ia, ja, aa)
+    
+    setMIPParmGLPK(MSG_LEV, verbose)
+    setMIPParmGLPK(PRESOLVE, GLP_ON)
+    
+    B <- N-nG
+    for (i in nG:1)
+    {
+      setRowBndGLPK(prob, N+nA+1, GLP_LO, i, i)
+      setRowBndGLPK(prob, N+nA+2, GLP_UP, B, B)
+      solveMIPGLPK(prob)
+      solution[[i]] <- mipColsValGLPK(prob)
+      objvalue[[i]] <- mipObjValGLPK(prob)
+      B <- (1-gene.set) %*% solution[[i]][(M+1):(M+N)]
     }
   }
   else if (method == "LP2")
@@ -117,7 +146,6 @@ ceat <- function(core.sets, gene.set, method="LP1", verbose=1)
     {
       setRowBndGLPK(prob, N+nA+1, GLP_LO, i, i)
       solveSimplexGLPK(prob)
-      print(i)
       solution[[i]] <- ceat.rounding(getColsPrimGLPK(prob), core.sets, gene.set, i)
       objvalue[[i]] <- ceat.evaluate(solution[[i]], core.sets, gene.set)
       ceat.check(solution[[i]], core.sets, gene.set, i)
