@@ -151,6 +151,8 @@ ceat <- function(core.sets, gene.set, method="LP1", verbose=1)
       ceat.check(solution[[i]], core.sets, gene.set, i)
     }
   }
+  
+  delProbGLPK(prob)
 
   list(solution=solution, objvalue=objvalue)
 }
