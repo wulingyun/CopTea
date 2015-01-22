@@ -204,16 +204,21 @@ ceat.randomize <- function(solution, core.sets, gene.set, alpha)
   xx <- solution[1:M]
   xx[xx < 0] <- 0
   x <- rep(0, M)
-  y <- rep(0, N)
-  n <- 0
-  while(sum(x) < M && (gene.set %*% y) < alpha)
+  repeat
   {
-    n <- n+1
-    x <- as.numeric(rmultinom(1, n, xx))
-    x[x >= 1] <- 1
+    p <- xx
+    p[x > 0] <- 0
+    x <- x + as.numeric(rmultinom(1, 1, p))
     y <- as.numeric(core.sets %*% x)
     y[y >= 1] <- 1
     y[y < 1] <- 0
+    if ((gene.set %*% y) >= alpha)
+      break
+    else if (sum(x) >= M)
+    {
+      print("No feasible solution!")
+      break
+    }
   }
   c(x, y)
 }
