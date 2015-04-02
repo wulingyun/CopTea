@@ -263,15 +263,15 @@ get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
 #'
 #' Load a Bioconductor package, automatically install if need.
 #'
-#' @param package The name of package name.
+#' @param pkg.name The name of package.
 #' 
 #' @export
-require_bioc <- function(package)
+require_bioc <- function(pkg.name)
 {
   source("http://bioconductor.org/biocLite.R")
-  if (!require(package))
+  if (!require(pkg.name, character.only=T))
   {
-    biocLite(package, suppressUpdates=T, suppressAutoUpdate=T)
-    require(package)
+    biocLite(pkg.name, suppressUpdates=T, suppressAutoUpdate=T)
+    require(pkg.name, character.only=T)
   }
 }

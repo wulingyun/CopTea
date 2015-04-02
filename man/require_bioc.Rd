@@ -4,10 +4,10 @@
 \alias{require_bioc}
 \title{Load a Bioconductor package}
 \usage{
-require_bioc(package)
+require_bioc(pkg.name)
 }
 \arguments{
-\item{package}{The name of package name.}
+\item{pkg.name}{The name of package.}
 }
 \description{
 Load a Bioconductor package, automatically install if need.
