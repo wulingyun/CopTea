@@ -92,14 +92,17 @@ ceat <- function(core.sets, gene.set, method="LP", randomize=1, verbose=1)
       solveSimplexGLPK(prob)
       solution[[i]] <- ceat.rounding(getColsPrimGLPK(prob), core.sets, gene.set, i)
       objvalue[[i]] <- ceat.evaluate(solution[[i]], core.sets, gene.set)
-      for (k in 1:randomize)
+      if (randomize >= 1)
       {
-        sol <- ceat.randomize(getColsPrimGLPK(prob), core.sets, gene.set, i)
-        obj <- ceat.evaluate(sol, core.sets, gene.set)
-        if (obj < objvalue[[i]])
+        for (k in 1:randomize)
         {
-          solution[[i]] <- sol
-          objvalue[[i]] <- obj
+          sol <- ceat.randomize(getColsPrimGLPK(prob), core.sets, gene.set, i)
+          obj <- ceat.evaluate(sol, core.sets, gene.set)
+          if (obj < objvalue[[i]])
+          {
+            solution[[i]] <- sol
+            objvalue[[i]] <- obj
+          }
         }
       }
       ceat.check(solution[[i]], core.sets, gene.set, i)
@@ -159,14 +162,17 @@ ceat <- function(core.sets, gene.set, method="LP", randomize=1, verbose=1)
       solveSimplexGLPK(prob)
       solution[[i]] <- ceat.rounding(getColsPrimGLPK(prob), core.sets, gene.set, i)
       objvalue[[i]] <- ceat.evaluate(solution[[i]], core.sets, gene.set)
-      for (k in 1:randomize)
+      if (randomize >= 1)
       {
-        sol <- ceat.randomize(getColsPrimGLPK(prob), core.sets, gene.set, i)
-        obj <- ceat.evaluate(sol, core.sets, gene.set)
-        if (obj < objvalue[[i]])
+        for (k in 1:randomize)
         {
-          solution[[i]] <- sol
-          objvalue[[i]] <- obj
+          sol <- ceat.randomize(getColsPrimGLPK(prob), core.sets, gene.set, i)
+          obj <- ceat.evaluate(sol, core.sets, gene.set)
+          if (obj < objvalue[[i]])
+          {
+            solution[[i]] <- sol
+            objvalue[[i]] <- obj
+          }
         }
       }
       ceat.check(solution[[i]], core.sets, gene.set, i)
@@ -208,6 +214,7 @@ ceat.randomize <- function(solution, core.sets, gene.set, alpha)
   {
     p <- xx
     p[x > 0] <- 0
+    if (sum(p > 0) <= 0) p[x <= 0] <- 1
     x <- x + as.numeric(rmultinom(1, 1, p))
     y <- as.numeric(core.sets %*% x)
     y[y >= 1] <- 1
