@@ -268,9 +268,9 @@ get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
 #' @export
 require_bioc <- function(pkg.name)
 {
-  source("http://bioconductor.org/biocLite.R")
   if (!require(pkg.name, character.only=T))
   {
+    source("http://bioconductor.org/biocLite.R")
     biocLite(pkg.name, suppressUpdates=T, suppressAutoUpdate=T)
     require(pkg.name, character.only=T)
   }
