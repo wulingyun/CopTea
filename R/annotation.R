@@ -34,7 +34,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
                             STRING.version = "9_1", STRING.threshold = 900)
 {
   if (species == "Human") {
-    require(org.Hs.eg.db)
+    require_bioc("org.Hs.eg.db")
     species.name <- "Homo sapiens"
     species.pre <- "hsa"
     species.id <- 9606
@@ -42,7 +42,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
     db.PROT <- org.Hs.egENSEMBLPROT
   }
   else if (species == "Mouse") {
-    require(org.Mm.eg.db)
+    require_bioc("org.Mm.eg.db")
     species.name <- "Mus musculus"
     species.pre <- "mmu"
     species.id <- 10090
@@ -50,7 +50,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
     db.PROT <- org.Mm.egENSEMBLPROT
   }
   else if (species == "Yeast") {
-    require(org.Sc.sgd.db)
+    require_bioc("org.Sc.sgd.db")
     species.name <- "Saccharomyces cerevisiae"
     species.pre <- "sce"
     species.id <- 4932
@@ -67,7 +67,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
 
   if ("GO" %in% filters) {
     if (species != "Human") {
-      require(org.Hs.eg.db)
+      require_bioc("org.Hs.eg.db")
       map.Human <- as.matrix(toTable(org.Hs.egGO2ALLEGS))
       map.Human <- map.Human[, c(1,2)]
       genes <- id_mapping_species(map.Human[, 1], "Human", species, FALSE)
@@ -82,7 +82,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   }
   
   if ("KEGG" %in% filters) {
-    require(KEGG.db)
+    require_bioc("KEGG.db")
     map.KEGG <- as.matrix(toTable(KEGGPATHID2EXTID))
     map.KEGG <- map.KEGG[, c(2,1)]
     map.KEGG <- map.KEGG[grepl(species.pre, map.KEGG[,2]), ]
@@ -90,7 +90,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   }
   
   if ("Reactome" %in% filters) {
-    require(reactome.db)
+    require_bioc("reactome.db")
     reactome.id <- as.matrix(toTable(reactomePATHID2NAME))
     reactome.id <- reactome.id[grepl(paste("^", species.name, sep=""), reactome.id[, 2]), 1]
     map.REACTOME <- as.matrix(toTable(reactomePATHID2EXTID))
@@ -115,7 +115,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   data$proteins <- unique(map[,2])
   data$gene2protein <- toMatrix(map, data$genes, data$proteins)
   
-  require(STRINGdb)
+  require_bioc("STRINGdb")
   string.id <- paste(species.id, data$proteins, sep=".")
   string.db <- STRINGdb$new(version=STRING.version, species=species.id, score_threshold=STRING.threshold)
   ppi <- string.db$get_interactions(string.id)
@@ -127,14 +127,14 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   term.info <- NULL
   
   if ("GO" %in% filters) {
-    require(GO.db)
+    require_bioc("GO.db")
     goterm <- AnnotationDbi::as.list(GOTERM)
     goterm <- t(sapply(1:length(goterm), function(i) c(goterm[[i]]@GOID, goterm[[i]]@Ontology, goterm[[i]]@Term)))
     term.info <- rbind(term.info, goterm)
   }
   
   if ("KEGG" %in% filters) {
-    require(KEGG.db)
+    require_bioc("KEGG.db")
     kegg <- as.matrix(toTable(KEGGPATHID2NAME))
     kegg[, 1] <- paste(species.pre, kegg[, 1], sep="")
     kegg <- cbind(kegg[, 1], "KEGG", kegg[, 2])
@@ -142,7 +142,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
   }
 
   if ("Reactome" %in% filters) {
-    require(reactome.db)
+    require_bioc("reactome.db")
     reactome <- as.matrix(toTable(reactomePATHID2NAME))
     reactome <- reactome[grepl(paste("^", species.name, sep=""), reactome[, 2]), ]
     reactome[, 1] <- paste("Reactome", reactome[, 1], sep=":")
@@ -241,7 +241,7 @@ get_annotated_genes <- function(annotations, species = "Human", gene.symbol = TR
 #' @export
 get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
 {
-  require(GO.db)
+  require_bioc("GO.db")
   terms <- NULL
   if ("BP" %in% domains) {
     x <- is.na(AnnotationDbi::as.list(GOBPOFFSPRING))
@@ -256,4 +256,22 @@ get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
     terms <- c(terms, names(x)[x])
   }
   terms
+}
+
+
+#' Load a Bioconductor package
+#'
+#' Load a Bioconductor package, automatically install if need.
+#'
+#' @param package The name of package name.
+#' 
+#' @export
+require_bioc <- function(package)
+{
+  source("http://bioconductor.org/biocLite.R")
+  if (!require(package))
+  {
+    biocLite(package, suppressUpdates=T, suppressAutoUpdate=T)
+    require(package)
+  }
 }
