@@ -1,8 +1,8 @@
-#' Extract core sets information from GO annotation
+#' Extract functional gene sets information from GO annotation
 #'
-#' Generate the core sets matrix from an object of class "Go3AnnDbBimap" in Bioconductor annotation package.
+#' Generate the functional gene sets matrix from an object of class "Go3AnnDbBimap" in Bioconductor annotation package.
 #'
-#' This function generates the \code{core.sets} matrix required by \code{\link{neeat}} method.
+#' This function generates the \code{func.gene.sets} matrix required by \code{\link{neeat}} method.
 #' 
 #' @param go.map An object of class "Go3AnnDbBimap".
 #' @param evidence Vector of string to filter the GO annotations, could be "ALL" or a set of evidence codes.
@@ -19,13 +19,13 @@
 #' source("http://bioconductor.org/biocLite.R")
 #' biocLite("org.Hs.eg.db")
 #' library(org.Hs.eg.db)
-#' x <- get_core_sets(org.Hs.egGO2ALLEGS)
+#' x <- get_func_gene_sets(org.Hs.egGO2ALLEGS)
 #' }
 #'
 #' @import Matrix
 #' 
 #' @export
-get_core_sets <- function(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
+get_func_gene_sets <- function(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
 {
   term.table <- AnnotationDbi::toTable(go.map)
   term.table[,1] <- toupper(term.table[,1])

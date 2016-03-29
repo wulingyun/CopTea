@@ -2,7 +2,7 @@
 #'
 #'
 #' @export
-id_mapping <- function(symbols, species = "Human", warning.unmapped = TRUE)
+id_mapping_from_symbol <- function(symbols, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -18,8 +18,8 @@ id_mapping <- function(symbols, species = "Human", warning.unmapped = TRUE)
     stop("Unsupported species!")
   }
 
-  id1 <- mapping(symbols, db.SYMBOL, 2, 1)
-  id2 <- mapping(id1$unmapped, db.ALIAS, 2, 1)
+  id1 <- id_mapping(symbols, db.SYMBOL, 2, 1)
+  id2 <- id_mapping(id1$unmapped, db.ALIAS, 2, 1)
   
   if (warning.unmapped && length(id2$unmapped) > 0)
   {
@@ -34,7 +34,7 @@ id_mapping <- function(symbols, species = "Human", warning.unmapped = TRUE)
 #'
 #'
 #' @export
-id_symbols <- function(ids, species = "Human", warning.unmapped = TRUE)
+id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
     require(org.Hs.eg.db)
@@ -48,7 +48,7 @@ id_symbols <- function(ids, species = "Human", warning.unmapped = TRUE)
     stop("Unsupported species!")
   }
   
-  id1 <- mapping(ids, db.SYMBOL, 1, 2)
+  id1 <- id_mapping(ids, db.SYMBOL, 1, 2)
   
   if (warning.unmapped && length(id1$unmapped) > 0)
   {
@@ -59,7 +59,11 @@ id_symbols <- function(ids, species = "Human", warning.unmapped = TRUE)
 }
 
 
-mapping <- function(id, db, from = 1, to = 2)
+#' Mapping central id to other id
+#'
+#'
+#' @export
+id_mapping <- function(id, db, from = 1, to = 2)
 {
   map <- as.matrix(toTable(db))
   id <- toupper(id)
@@ -79,8 +83,8 @@ mapping <- function(id, db, from = 1, to = 2)
 id_mapping_species <- function(ids, species.from, species.to, rm.na = FALSE)
 {
   ids <- unique(ids)
-  symbols <- id_symbols(ids, species.from, FALSE)
-  genes <- id_mapping(symbols, species.to, FALSE)
+  symbols <- id_mapping_to_symbol(ids, species.from, FALSE)
+  genes <- id_mapping_from_symbol(symbols, species.to, FALSE)
   genes <- genes[symbols[ids]]
   names(genes) <- ids
   if (rm.na) genes <- genes[!is.na(genes)]
