@@ -17,6 +17,8 @@
 #' @export
 neeat_depths <- function(seed.node.sets, net, max.depth, n.cpu = 1)
 {
+  if (is.null(dim(seed.node.sets)))
+    seed.node.sets <- Matrix(as.logical(seed.node.sets))
   net.edges <- get_net_edges(net)
   fun <- function(i) get_node_depths(column(seed.node.sets, i), net.edges, max.depth)
   if (n.cpu > 1) {

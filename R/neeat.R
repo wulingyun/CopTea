@@ -36,8 +36,8 @@
 #' @import Matrix parallel
 #'
 #' @export
-neeat <- function(eval.gene.set, func.gene.sets, net = NULL,
-                  method = "neeat", max.depth = 1, rho = 0.5, n.perm = 10000,
+neeat <- function(eval.gene.set, func.gene.sets, net,
+                  method = "neeat_hyper", max.depth = 1, rho = 0.5, n.perm = 10000,
                   z.threshold = 0, verbose = FALSE, n.cpu = 1, batch.size = 5000)
 {
   if (is.null(dim(func.gene.sets)))
@@ -54,8 +54,9 @@ neeat <- function(eval.gene.set, func.gene.sets, net = NULL,
   if (method == "neeat") {
     neeat.par$depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth, n.cpu)
   }
-  else if (method == "neeat_hyper")
+  else if (method == "neeat_hyper") {
     eval.gene.set[neeat_depths(eval.gene.set, net, max.depth, n.cpu) >= 0] <- T
+  }
 
   if (n.cpu > 1) {
     if (.Platform$OS.type == "windows")
