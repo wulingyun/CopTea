@@ -4,9 +4,9 @@
 \alias{neeat}
 \title{Network enhanced enrichment analysis tool}
 \usage{
-neeat(eval.gene.set, func.gene.sets, net = NULL, method = "nb",
-  max.depth = 1, n.perm = 1000, z.threshold = 0, verbose = FALSE,
-  n.cpu = 1, batch.size = 5000)
+neeat(eval.gene.set, func.gene.sets, net = NULL, method = "neeat",
+  max.depth = 1, rho = 0.5, n.perm = 10000, z.threshold = 0,
+  verbose = FALSE, n.cpu = 1, batch.size = 5000)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}
@@ -16,12 +16,15 @@ The rows correspond to genes, while the columns represent the functions or pathw
 
 \item{net}{The adjacent matrix of network.}
 
-\item{method}{A string indicated the NEEAT model, including "nb", "rwr" and "hyper". 
+\item{method}{A string indicated the NEEAT model, including "neeat", "neeat_hyper" and "hyper". 
 Use "hyper" for traditional hypergeometric test, in which the network information is ignored.}
 
 \item{max.depth}{Integer for the maximum depth considered in the NEEAT models.}
 
-\item{n.perm}{The number of permutations for calculating p-values. Zero or negative value to disable calcuation of p-values.}
+\item{rho}{The weight parameter for depths.}
+
+\item{n.perm}{The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
+Ignored in the models "neeat_hyper" and "hyper".}
 
 \item{z.threshold}{The threshold for filtering out small Z-scores. The p-values are calculated only
 for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
