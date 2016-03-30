@@ -31,7 +31,7 @@
 #'
 #' @export
 get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM"),
-                            STRING.version = "9_1", STRING.threshold = 900)
+                            STRING.version = "10", STRING.threshold = 900)
 {
   if (species == "Human") {
     require_bioc("org.Hs.eg.db")
@@ -268,7 +268,7 @@ get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
 #' @export
 require_bioc <- function(pkg.name)
 {
-  if (!require(pkg.name, character.only=T))
+  if (!require(pkg.name, character.only=T, quietly = T))
   {
     source("http://bioconductor.org/biocLite.R")
     biocLite(pkg.name, suppressUpdates=T, suppressAutoUpdate=T)
