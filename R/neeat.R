@@ -113,7 +113,7 @@ neeat_internal <- function(fgs.ids, gene.set, func.gene.sets, net, method, neeat
 
 neeat_score <- function(fgs, neeat.par)
 {
-  scores <- colSums(neeat.par$score.matrix[fgs, , drop=F])
+  scores <- .Call(NE_ColSums, neeat.par$score.matrix, which(fgs))
   raw.score <- scores[1]
   avg.score <- mean(scores[-1])
   var.score <- var(scores[-1])
