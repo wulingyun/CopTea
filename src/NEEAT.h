@@ -15,6 +15,8 @@ extern "C" {
 
   SEXP NE_GetDepths(SEXP _Edges, SEXP _Index, SEXP _Core, SEXP _MaxDepth);
   SEXP NE_CountDepths(SEXP _Depth, SEXP _MaxDepth);
+  
+  SEXP NE_ColSums(SEXP _Matrix, SEXP _RowSel);
 }
 
 

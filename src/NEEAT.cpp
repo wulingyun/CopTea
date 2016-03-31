@@ -6,6 +6,7 @@ const R_CallMethodDef callMethods[] = {
   {"PMultiNom", (DL_FUNC) &PMultiNom, 4},
   {"NE_GetDepths", (DL_FUNC) &NE_GetDepths, 4},
   {"NE_CountDepths", (DL_FUNC) &NE_CountDepths, 2},
+  {"NE_ColSums", (DL_FUNC) &NE_ColSums, 2},
   {NULL, NULL, 0}
 };
 
