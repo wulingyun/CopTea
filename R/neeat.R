@@ -42,6 +42,7 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
 {
   if (is.null(dim(func.gene.sets)))
     func.gene.sets <- Matrix(as.logical(func.gene.sets))
+  max.depth <- max(0, max.depth)
   n.perm <- max(100, n.perm)
   
   neeat.par <- new.env()
@@ -52,7 +53,9 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   neeat.par$verbose = verbose
   
   if (method == "neeat") {
-    neeat.par$depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth, n.cpu)
+    rho.v <- c(0, rho^(0:max.depth))
+    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth, n.cpu)
+    neeat.par$score.matrix <- matrix(rho.v[depths + 2], length(eval.gene.set), n.perm+1)
   }
   else if (method == "neeat_hyper") {
     eval.gene.set[neeat_depths(eval.gene.set, net, max.depth, n.cpu) >= 0] <- T
@@ -110,10 +113,7 @@ neeat_internal <- function(fgs.ids, gene.set, func.gene.sets, net, method, neeat
 
 neeat_score <- function(fgs, neeat.par)
 {
-  depths <- neeat.par$depths[fgs, , drop=F]
-  score.matrix <- neeat.par$rho^depths
-  score.matrix[depths < 0] <- 0
-  scores <- colSums(score.matrix)
+  scores <- colSums(neeat.par$score.matrix[fgs, , drop=F])
   raw.score <- scores[1]
   avg.score <- mean(scores[-1])
   var.score <- var(scores[-1])
