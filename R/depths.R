@@ -45,12 +45,11 @@ neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1
 {
   n.all <- length(seed.nodes)
   n.seed <- sum(seed.nodes)
-  vi <- integer((n.perm+1)*n.seed)
-  vi[1:n.seed] <- which(seed.nodes)
-  for (i in 2:(n.perm+1))
+  vi <- integer(n.perm*n.seed)
+  for (i in 1:n.perm)
     vi[(i-1)*n.seed + (1:n.seed)] <- sample.int(n.all, n.seed)
-  vj <- rep(1:(n.perm+1), each = n.seed)
-  seed.perm <- sparseMatrix(vi, vj, x = T, dims = c(n.all, n.perm+1))
+  vj <- rep(1:n.perm, each = n.seed)
+  seed.perm <- sparseMatrix(vi, vj, x=T, dims=c(n.all, n.perm))
   neeat_depths(seed.perm, net, max.depth)
 }
 
