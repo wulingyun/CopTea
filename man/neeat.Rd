@@ -4,9 +4,9 @@
 \alias{neeat}
 \title{Network enhanced enrichment analysis tool}
 \usage{
-neeat(eval.gene.set, func.gene.sets, net = NULL, method = "neeat",
-  max.depth = 1, rho = 0.5, n.perm = 10000, z.threshold = 0,
-  verbose = FALSE, n.cpu = 1, batch.size = 5000)
+neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
+  rho = 0.5, n.perm = 10000, z.threshold = 0, verbose = FALSE,
+  n.cpu = 1, batch.size = 5000)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}

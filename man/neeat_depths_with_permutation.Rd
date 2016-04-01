@@ -4,8 +4,7 @@
 \alias{neeat_depths_with_permutation}
 \title{Compute the node depths with permutation}
 \usage{
-neeat_depths_with_permutation(seed.nodes, net, n.perm, max.depth = 1,
-  n.cpu = 1)
+neeat_depths_with_permutation(seed.nodes, net, n.perm, max.depth = 1)
 }
 \arguments{
 \item{seed.nodes}{Logical vector indicated the seed nodes.}
@@ -13,8 +12,6 @@ neeat_depths_with_permutation(seed.nodes, net, n.perm, max.depth = 1,
 \item{net}{The adjacent matrix of network.}
 
 \item{max.depth}{Integer for the maximum depth that will be computed.}
-
-\item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 
 \item{n.parm}{The number of permutations.}
 }

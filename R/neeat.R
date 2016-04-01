@@ -37,9 +37,11 @@
 #'
 #' @export
 neeat <- function(eval.gene.set, func.gene.sets, net,
-                  method = "neeat_hyper", max.depth = 1, rho = 0.5, n.perm = 10000,
+                  method = "neeat", max.depth = 1, rho = 0.5, n.perm = 10000,
                   z.threshold = 0, verbose = FALSE, n.cpu = 1, batch.size = 5000)
 {
+  if (!is.null(dim(eval.gene.set)))
+    eval.gene.set <- eval.gene.set[, 1]
   if (is.null(dim(func.gene.sets)))
     func.gene.sets <- Matrix(as.logical(func.gene.sets))
   max.depth <- max(0, max.depth)
@@ -54,11 +56,11 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   
   if (method == "neeat") {
     rho.v <- c(0, rho^(0:max.depth))
-    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth, n.cpu)
+    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth)
     neeat.par$score.matrix <- matrix(rho.v[depths + 2], length(eval.gene.set), n.perm+1)
   }
   else if (method == "neeat_hyper") {
-    eval.gene.set[neeat_depths(eval.gene.set, net, max.depth, n.cpu) >= 0] <- T
+    eval.gene.set[neeat_depths(eval.gene.set, net, max.depth) >= 0] <- T
   }
 
   if (n.cpu > 1) {
