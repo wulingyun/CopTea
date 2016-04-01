@@ -5,8 +5,8 @@
 \title{Network enhanced enrichment analysis tool}
 \usage{
 neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
-  rho = 0.5, n.perm = 10000, z.threshold = 0, verbose = FALSE,
-  n.cpu = 1, batch.size = 5000)
+  rho = 0.5, n.perm = 1e+05, verbose = FALSE, n.cpu = 1,
+  perm.batch = 10000)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}
@@ -26,15 +26,15 @@ Use "hyper" for traditional hypergeometric test, in which the network informatio
 \item{n.perm}{The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
 Ignored in the models "neeat_hyper" and "hyper".}
 
-\item{z.threshold}{The threshold for filtering out small Z-scores. The p-values are calculated only
-for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
-
 \item{verbose}{Logical variable indicated whether output the full variables for computing p-value,
 such as mean and variance.}
 
 \item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 
-\item{batch.size}{The desired size of batches in the parallel computation.}
+\item{perm.batch}{The desired size of permutation batches in the parallel computation.}
+
+\item{z.threshold}{The threshold for filtering out small Z-scores. The p-values are calculated only
+for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
 }
 \value{
 This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.core.sets)[2])},

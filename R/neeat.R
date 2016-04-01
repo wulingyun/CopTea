@@ -20,7 +20,7 @@
 #' @param verbose Logical variable indicated whether output the full variables for computing p-value,
 #' such as mean and variance.
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
-#' @param batch.size The desired size of batches in the parallel computation.
+#' @param perm.batch The desired size of permutation batches in the parallel computation.
 #' 
 #' @return This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.core.sets)[2])},
 #' and each column \code{[,j]} containing the following components for the correponding gene set for evaluating
@@ -37,8 +37,8 @@
 #'
 #' @export
 neeat <- function(eval.gene.set, func.gene.sets, net,
-                  method = "neeat", max.depth = 1, rho = 0.5, n.perm = 10000,
-                  z.threshold = 0, verbose = FALSE, n.cpu = 1, batch.size = 5000)
+                  method = "neeat", max.depth = 1, rho = 0.5, n.perm = 100000,
+                  verbose = FALSE, n.cpu = 1, perm.batch = 10000)
 {
   if (!is.null(dim(eval.gene.set)))
     eval.gene.set <- eval.gene.set[, 1]
@@ -51,36 +51,47 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   neeat.par$max.depth = max.depth
   neeat.par$rho = rho
   neeat.par$n.perm = n.perm
-  neeat.par$z.threshold = z.threshold
   neeat.par$verbose = verbose
+  neeat.par$n.cpu = n.cpu
+  neeat.par$perm.batch = perm.batch
   
   if (method == "neeat") {
-    rho.v <- c(0, rho^(0:max.depth))
-    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, max.depth)
-    neeat.par$score.matrix <- matrix(rho.v[depths + 2], length(eval.gene.set), n.perm+1)
+    neeat.par$rho <- c(0, rho^(0:max.depth))
+    depths <- neeat_depths(eval.gene.set, net, max.depth)
+    raw.score <- as.numeric(neeat.par$rho[depths + 2] %*% func.gene.sets)
+    if (n.cpu > 1) {
+      if (.Platform$OS.type == "windows")
+        cl <- makeCluster(n.cpu)
+      else
+        cl <- makeForkCluster(n.cpu)
+      n.cpu <- length(cl)
+      neeat.par$n.perm <- ceiling(n.perm / n.cpu)
+      perm.score <- clusterCall(cl, neeat_perm, eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
+      stopCluster(cl)
+      perm.score <- matrix(rowMeans(matrix(unlist(perm.score), ncol=n.cpu)), nrow=3)
+    }
+    else {
+      perm.score <- neeat_perm(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
+    }
+    z.score <- (raw.score - perm.score[2, ]) / sqrt(perm.score[3, ])
+    if (neeat.par$verbose)
+      result <- rbind(z.score, perm.score, raw.score)
+    else
+      result <- rbind(z.score, perm.score[1, ])
   }
   else if (method == "neeat_hyper") {
     eval.gene.set[neeat_depths(eval.gene.set, net, max.depth) >= 0] <- T
+    result <- neeat_hyper(eval.gene.set, func.gene.sets, neeat.par)
   }
-
-  if (n.cpu > 1) {
-    if (.Platform$OS.type == "windows")
-      cl <- makeCluster(n.cpu)
-    else
-      cl <- makeForkCluster(n.cpu)
-    n.cl <- length(cl)
-    n.job <- dim(func.gene.sets)[2]
-    n.batch <- max(1, round(n.job / (batch.size * n.cl))) * n.cl
-    jobs <- splitIndices(n.job, n.batch)
-    result <- clusterApply(cl, jobs, neeat_internal, eval.gene.set, func.gene.sets, net, method, neeat.par)
-    stopCluster(cl)
-    result <- unlist(result)
+  else if (method == "hyper") {
+    result <- neeat_hyper(eval.gene.set, func.gene.sets, neeat.par)
   }
   else {
-    result <- neeat_internal(seq_len(dim(func.gene.sets)[2]), eval.gene.set, func.gene.sets, net, method, neeat.par)
+    stop("Incorrect method!")
   }
+  
   if (neeat.par$verbose)
-    output.names <- c("z.score", "p.value", "raw.score", "avg.score", "var.score")
+    output.names <- c("z.score", "p.value", "avg.score", "var.score", "raw.score")
   else
     output.names <- c("z.score", "p.value")
   result <- array(result, dim = c(length(output.names), dim(func.gene.sets)[2]),
@@ -88,56 +99,57 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   result
 }
 
-neeat_internal <- function(fgs.ids, gene.set, func.gene.sets, net, method, neeat.par)
+
+neeat_perm <- function(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
 {
-  if (method == "neeat") {
-    neeat_fgs <- function(i)
-    {
-      fgs <- column(func.gene.sets, i)
-      neeat_score(fgs, neeat.par)
-    }
+  n.batch <- ceiling(neeat.par$n.perm / neeat.par$perm.batch)
+  n.perm <- ceiling(neeat.par$n.perm / n.batch)
+  perm.score <- list()
+  for (i in 1:n.batch) {
+    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, neeat.par$max.depth)
+    score.matrix <- matrix(neeat.par$rho[depths + 2], length(eval.gene.set), n.perm)
+    perm.score[[i]] <- sapply(1:dim(func.gene.sets)[2], neeat_i, score.matrix, func.gene.sets, raw.score, n.perm)
   }
-  else if (method == "hyper" || method == "neeat_hyper") {
-    N <- dim(func.gene.sets)[1]
-    M <- colSums(func.gene.sets)
-    n <- sum(gene.set)
-    neeat_fgs <- function(i)
-    {
-      m <- sum(column(func.gene.sets, i) & gene.set)
-      neeat_hyper(N, n, M[i], m, neeat.par)
-    }
+  matrix(rowMeans(matrix(unlist(perm.score), ncol=n.batch)), nrow=3)
+}
+
+
+neeat_i <- function(i, score.matrix, func.gene.sets, raw.score, n.perm)
+{
+  perm.score <- .Call(NE_ColSums, score.matrix, which(column(func.gene.sets, i)))
+  avg.score <- mean(perm.score)
+  var.score <- var(perm.score)
+  p.value <- sum(perm.score >= raw.score[i]) / n.perm
+  c(p.value, avg.score, var.score)
+}
+
+
+neeat_hyper <- function(gene.set, func.gene.sets, neeat.par)
+{
+  N <- dim(func.gene.sets)[1]
+  M <- colSums(func.gene.sets)
+  n <- sum(gene.set)
+  jobs <- seq_len(dim(func.gene.sets)[2])
+  if (neeat.par$n.cpu > 1) {
+    if (.Platform$OS.type == "windows")
+      cl <- makeCluster(neeat.par$n.cpu)
+    else
+      cl <- makeForkCluster(neeat.par$n.cpu)
+    result <- parSapply(cl, jobs, neeat_hyper_i, N, n, M, gene.set, func.gene.sets, neeat.par)
+    stopCluster(cl)
   }
   else {
-    stop("Incorrect parameters!")
+    result <- sapply(jobs, neeat_hyper_i, N, n, M, gene.set, func.gene.sets, neeat.par)
   }
-  sapply(fgs.ids, neeat_fgs)
+  result
 }
 
-neeat_score <- function(fgs, neeat.par)
+
+neeat_hyper_i <- function(i, N, n, M, gene.set, func.gene.sets, neeat.par)
 {
-  scores <- .Call(NE_ColSums, neeat.par$score.matrix, which(fgs))
-  raw.score <- scores[1]
-  avg.score <- mean(scores[-1])
-  var.score <- var(scores[-1])
+  M <- M[i]
+  m <- sum(column(func.gene.sets, i) & gene.set)
 
-  if (!is.nan(var.score) && var.score > 0)
-    z.score <- (raw.score - avg.score) / sqrt(var.score)
-  else
-    z.score <- 0
-
-  if (z.score >= neeat.par$z.threshold)
-    p.value <- sum(scores[-1] >= raw.score) / neeat.par$n.perm
-  else
-    p.value <- 1.0
-
-  if (neeat.par$verbose)
-    c(z.score, p.value, raw.score, avg.score, var.score)
-  else
-    c(z.score, p.value)
-}
-
-neeat_hyper <- function(N, n, M, m, neeat.par)
-{
   avg.score <- n * M / N
   var.score <- n * (M / N) * ((N - M) / N) * ((N - n) / (N - 1))
   
@@ -149,7 +161,7 @@ neeat_hyper <- function(N, n, M, m, neeat.par)
   p.value <- phyper(m-1, M, N-M, n, lower.tail=F)
 
   if (neeat.par$verbose)
-    c(z.score, p.value, m, avg.score, var.score)
+    c(z.score, p.value, avg.score, var.score, m)
   else
     c(z.score, p.value)
 }
