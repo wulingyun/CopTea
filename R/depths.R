@@ -7,7 +7,6 @@
 #' @param seed.node.sets Logical matrix indicated the seed nodes associated with specific conditions (gene sets).
 #' @param net The adjacent matrix of network.
 #' @param max.depth Integer for the maximum depth that will be computed.
-#' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' 
 #' @return This function returns a matrix with the same dimensions as \code{seed.node.sets}, where the element
 #' \code{[i, j]} represents the depth of node \code{i} under the condition (gene set) \code{j}.
@@ -15,24 +14,13 @@
 #' @seealso \code{\link{neeat}}
 #' 
 #' @export
-neeat_depths <- function(seed.node.sets, net, max.depth, n.cpu = 1)
+neeat_depths <- function(seed.node.sets, net, max.depth)
 {
   if (is.null(dim(seed.node.sets)))
     seed.node.sets <- Matrix(as.logical(seed.node.sets))
   net.edges <- get_net_edges(net)
   fun <- function(i) get_node_depths(column(seed.node.sets, i), net.edges, max.depth)
-  if (n.cpu > 1) {
-    if (.Platform$OS.type == "windows")
-      cl <- makeCluster(n.cpu)
-    else
-      cl <- makeForkCluster(n.cpu)
-    depths <- parSapply(cl, seq_len(dim(seed.node.sets)[2]), fun)
-    stopCluster(cl)
-  }
-  else {
-    depths <- sapply(seq_len(dim(seed.node.sets)[2]), fun)
-  }
-  depths
+  sapply(seq_len(dim(seed.node.sets)[2]), fun)
 }
 
 
@@ -46,7 +34,6 @@ neeat_depths <- function(seed.node.sets, net, max.depth, n.cpu = 1)
 #' @param net The adjacent matrix of network.
 #' @param n.parm The number of permutations.
 #' @param max.depth Integer for the maximum depth that will be computed.
-#' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #'
 #' @return This function returns a matrix with the dimensions \code{c(length(seed.nodes), n.perm+1)}, where the element
 #' \code{[i, 1]} represents the depth of node \code{i}, and \code{[i, j+1]} the depth in permutation \code{j}.
@@ -54,7 +41,7 @@ neeat_depths <- function(seed.node.sets, net, max.depth, n.cpu = 1)
 #' @seealso \code{\link{neeat}}, \code{\link{neeat_depths}}
 #'
 #' @export
-neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1, n.cpu = 1)
+neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1)
 {
   n.all <- length(seed.nodes)
   n.seed <- sum(seed.nodes)
@@ -64,7 +51,7 @@ neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1
     vi[(i-1)*n.seed + (1:n.seed)] <- sample.int(n.all, n.seed)
   vj <- rep(1:(n.perm+1), each = n.seed)
   seed.perm <- sparseMatrix(vi, vj, x = T, dims = c(n.all, n.perm+1))
-  neeat_depths(seed.perm, net, max.depth, n.cpu)
+  neeat_depths(seed.perm, net, max.depth)
 }
 
 
