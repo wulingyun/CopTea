@@ -9,12 +9,12 @@
 #' @param func.gene.sets Logical matrix indicated the functional gene sets associated with specific functions or pathways.
 #' The rows correspond to genes, while the columns represent the functions or pathways.
 #' @param net The adjacent matrix of network.
-#' @param method A string indicated the NEEAT model, including "neeat", "neeat_hyper" and "hyper". 
+#' @param method A string indicated the NEEAT model, including "neeat", "neeat_h1", "neeat_h2" and "hyper". 
 #' Use "hyper" for traditional hypergeometric test, in which the network information is ignored.
 #' @param max.depth Integer for the maximum depth considered in the NEEAT models.
 #' @param rho The weight parameter for depths.
 #' @param n.perm The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
-#' Ignored in the models "neeat_hyper" and "hyper".
+#' Ignored in the models "neeat_h1", "neeat_h2" and "hyper".
 #' @param verbose Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' @param perm.batch The desired number of permutations in each batch of the parallel computation.
@@ -77,9 +77,13 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     else
       result <- rbind(z.score, perm.score[1, ])
   }
-  else if (method == "neeat_hyper") {
-    eval.gene.set[neeat_depths(eval.gene.set, net, max.depth) >= 0] <- T
-    result <- neeat_hyper(eval.gene.set, func.gene.sets, neeat.par)
+  else if (method == "neeat_h1") {
+    egs <- Matrix(neeat_depths(eval.gene.set, net, max.depth) >= 0, sparse=T)
+    result <- neeat_hyper(egs, func.gene.sets, neeat.par)
+  }
+  else if (method == "neeat_h2") {
+    fgs <- Matrix(neeat_depths(func.gene.sets, net, max.depth) >= 0, sparse=T)
+    result <- neeat_hyper(eval.gene.set, fgs, neeat.par)
   }
   else if (method == "hyper") {
     result <- neeat_hyper(eval.gene.set, func.gene.sets, neeat.par)

@@ -16,7 +16,7 @@ The rows correspond to genes, while the columns represent the functions or pathw
 
 \item{net}{The adjacent matrix of network.}
 
-\item{method}{A string indicated the NEEAT model, including "neeat", "neeat_hyper" and "hyper". 
+\item{method}{A string indicated the NEEAT model, including "neeat", "neeat_h1", "neeat_h2" and "hyper". 
 Use "hyper" for traditional hypergeometric test, in which the network information is ignored.}
 
 \item{max.depth}{Integer for the maximum depth considered in the NEEAT models.}
@@ -24,7 +24,7 @@ Use "hyper" for traditional hypergeometric test, in which the network informatio
 \item{rho}{The weight parameter for depths.}
 
 \item{n.perm}{The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
-Ignored in the models "neeat_hyper" and "hyper".}
+Ignored in the models "neeat_h1", "neeat_h2" and "hyper".}
 
 \item{verbose}{Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.}
 
