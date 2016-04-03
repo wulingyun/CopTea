@@ -15,21 +15,17 @@
 #' @param rho The weight parameter for depths.
 #' @param n.perm The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
 #' Ignored in the models "neeat_hyper" and "hyper".
-#' @param z.threshold The threshold for filtering out small Z-scores. The p-values are calculated only
-#' for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.
-#' @param verbose Logical variable indicated whether output the full variables for computing p-value,
-#' such as mean and variance.
+#' @param verbose Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
-#' @param perm.batch The desired size of permutation batches in the parallel computation.
+#' @param perm.batch The desired number of permutations in each batch of the parallel computation.
 #' 
 #' @return This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.core.sets)[2])},
-#' and each column \code{[,j]} containing the following components for the correponding gene set for evaluating
-#' and functional gene set \code{func.gene.sets[,j]}:
-#'   \item{\code{z.score}}{The Z-score for the gene set}
-#'   \item{\code{p.value}}{The statistic significance for the gene set under specified NEEAT model}
-#'   \item{\code{raw.score}}{The raw score for the gene set under specified NEEAT model}
-#'   \item{\code{avg.score}}{The average score for random permutations of the gene set}
-#'   \item{\code{var.score}}{The variance of scores for random permutations of the gene set}
+#' and each column \code{[,j]} containing the following components for the functional gene set \code{func.gene.sets[,j]}:
+#'   \item{\code{z.score}}{The Z-score of the functional gene set}
+#'   \item{\code{p.value}}{The statistic significance of the functional gene set}
+#'   \item{\code{avg.score}}{The average score in random permutations}
+#'   \item{\code{var.score}}{The variance of scores in random permutations}
+#'   \item{\code{raw.score}}{The raw score of the functional gene set}
 #'
 #' @seealso \code{\link{get_func_gene_sets}}, \code{\link{neeat_depths}}
 #' 
@@ -37,8 +33,8 @@
 #'
 #' @export
 neeat <- function(eval.gene.set, func.gene.sets, net,
-                  method = "neeat", max.depth = 1, rho = 0.5, n.perm = 100000,
-                  verbose = FALSE, n.cpu = 1, perm.batch = 10000)
+                  method = "neeat", max.depth = 1, rho = 1.0, n.perm = 100000,
+                  verbose = FALSE, n.cpu = 1, perm.batch = 5000)
 {
   if (!is.null(dim(eval.gene.set)))
     eval.gene.set <- eval.gene.set[, 1]
@@ -126,31 +122,31 @@ neeat_i <- function(i, score.matrix, func.gene.sets, raw.score, n.perm)
 }
 
 
-neeat_hyper <- function(gene.set, func.gene.sets, neeat.par)
+neeat_hyper <- function(eval.gene.set, func.gene.sets, neeat.par)
 {
   N <- dim(func.gene.sets)[1]
   M <- colSums(func.gene.sets)
-  n <- sum(gene.set)
+  n <- sum(eval.gene.set)
   jobs <- seq_len(dim(func.gene.sets)[2])
   if (neeat.par$n.cpu > 1) {
     if (.Platform$OS.type == "windows")
       cl <- makeCluster(neeat.par$n.cpu)
     else
       cl <- makeForkCluster(neeat.par$n.cpu)
-    result <- parSapply(cl, jobs, neeat_hyper_i, N, n, M, gene.set, func.gene.sets, neeat.par)
+    result <- parSapply(cl, jobs, neeat_hyper_i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
     stopCluster(cl)
   }
   else {
-    result <- sapply(jobs, neeat_hyper_i, N, n, M, gene.set, func.gene.sets, neeat.par)
+    result <- sapply(jobs, neeat_hyper_i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
   }
   result
 }
 
 
-neeat_hyper_i <- function(i, N, n, M, gene.set, func.gene.sets, neeat.par)
+neeat_hyper_i <- function(i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
 {
   M <- M[i]
-  m <- sum(column(func.gene.sets, i) & gene.set)
+  m <- sum(column(func.gene.sets, i) & eval.gene.set)
 
   avg.score <- n * M / N
   var.score <- n * (M / N) * ((N - M) / N) * ((N - n) / (N - 1))

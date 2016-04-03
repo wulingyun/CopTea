@@ -5,8 +5,8 @@
 \title{Network enhanced enrichment analysis tool}
 \usage{
 neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
-  rho = 0.5, n.perm = 1e+05, verbose = FALSE, n.cpu = 1,
-  perm.batch = 10000)
+  rho = 1, n.perm = 1e+05, verbose = FALSE, n.cpu = 1,
+  perm.batch = 5000)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}
@@ -26,25 +26,20 @@ Use "hyper" for traditional hypergeometric test, in which the network informatio
 \item{n.perm}{The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
 Ignored in the models "neeat_hyper" and "hyper".}
 
-\item{verbose}{Logical variable indicated whether output the full variables for computing p-value,
-such as mean and variance.}
+\item{verbose}{Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.}
 
 \item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 
-\item{perm.batch}{The desired size of permutation batches in the parallel computation.}
-
-\item{z.threshold}{The threshold for filtering out small Z-scores. The p-values are calculated only
-for the Z-scores \code{>= z.threshold}, otherwise p-values are set as 1.}
+\item{perm.batch}{The desired number of permutations in each batch of the parallel computation.}
 }
 \value{
 This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.core.sets)[2])},
-and each column \code{[,j]} containing the following components for the correponding gene set for evaluating
-and functional gene set \code{func.gene.sets[,j]}:
-  \item{\code{z.score}}{The Z-score for the gene set}
-  \item{\code{p.value}}{The statistic significance for the gene set under specified NEEAT model}
-  \item{\code{raw.score}}{The raw score for the gene set under specified NEEAT model}
-  \item{\code{avg.score}}{The average score for random permutations of the gene set}
-  \item{\code{var.score}}{The variance of scores for random permutations of the gene set}
+and each column \code{[,j]} containing the following components for the functional gene set \code{func.gene.sets[,j]}:
+  \item{\code{z.score}}{The Z-score of the functional gene set}
+  \item{\code{p.value}}{The statistic significance of the functional gene set}
+  \item{\code{avg.score}}{The average score in random permutations}
+  \item{\code{var.score}}{The variance of scores in random permutations}
+  \item{\code{raw.score}}{The raw score of the functional gene set}
 }
 \description{
 Functional enrichment anslysis of gene sets by integrating network information
