@@ -5,7 +5,7 @@
 \title{Get significant term list}
 \usage{
 get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL,
-  adjust.p = "bonferroni")
+  z.score = NULL, adjust.p = "bonferroni")
 }
 \arguments{
 \item{p.values}{The vector of p-values.}

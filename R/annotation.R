@@ -184,11 +184,15 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
 #' @seealso \code{\link{get_annotation}}
 #'
 #' @export
-get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters = NULL, adjust.p = "bonferroni")
+get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters = NULL, z.score = NULL, adjust.p = "bonferroni")
 {
   p <- data.frame(names(p.values), p.values, p.adjust(p.values, method = adjust.p), stringsAsFactors = F)
-  p <- p[p[, 3] <= threshold, ]
-  p <- p[order(p[, 2]), ]
+  select.term <- p[, 3] <= threshold
+  p <- p[select.term, ]
+  if (is.null(z.score))
+    p <- p[order(p[, 2]), ]
+  else
+    p <- p[order(p[, 2], -z.score[select.term]), ]
   rank <- cbind(seq_len(nrow(p)), p, term.info[p[, 1], c(2, 3)])
   rownames(rank) <- rank[, 2]
   colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")

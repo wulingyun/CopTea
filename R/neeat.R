@@ -44,6 +44,8 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     eval.gene.set <- eval.gene.set[, 1]
   if (is.null(dim(func.gene.sets)))
     func.gene.sets <- Matrix(as.logical(func.gene.sets))
+  if (length(eval.gene.set) != dim(func.gene.sets)[1])
+    stop("length(eval.gene.set) != dim(func.gene.sets)[1]!")
   max.depth <- max(0, max.depth)
   n.perm <- max(100, n.perm)
   
