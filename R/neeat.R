@@ -57,6 +57,8 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     neeat.par$rho <- c(0, rho^(0:max.depth))
     depths <- neeat_depths(eval.gene.set, net, max.depth)
     raw.score <- as.numeric(neeat.par$rho[depths + 2] %*% func.gene.sets)
+    func.gene.sets <- func.gene.sets[, raw.score > 0, drop=F]
+    raw.score <- raw.score[raw.score > 0]
     if (n.cpu > 1) {
       if (.Platform$OS.type == "windows")
         cl <- makeCluster(n.cpu)
@@ -72,10 +74,7 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
       perm.score <- neeat_perm(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
     }
     z.score <- (raw.score - perm.score[2, ]) / sqrt(perm.score[3, ])
-    if (neeat.par$verbose)
-      result <- rbind(z.score, perm.score, raw.score)
-    else
-      result <- rbind(z.score, perm.score[1, ])
+    result <- rbind(z.score, perm.score, raw.score)
   }
   else if (method == "neeat_h1") {
     egs <- Matrix(neeat_depths(eval.gene.set, net, max.depth) >= 0, sparse=T)
@@ -92,10 +91,7 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     stop("Incorrect method!")
   }
   
-  if (neeat.par$verbose)
-    output.names <- c("z.score", "p.value", "avg.score", "var.score", "raw.score")
-  else
-    output.names <- c("z.score", "p.value")
+  output.names <- c("z.score", "p.value", "avg.score", "var.score", "raw.score")
   result <- array(result, dim = c(length(output.names), dim(func.gene.sets)[2]),
                   dimnames <- list(output.names, colnames(func.gene.sets)))
   result
@@ -143,28 +139,28 @@ neeat_hyper <- function(eval.gene.set, func.gene.sets, neeat.par)
   else {
     result <- sapply(jobs, neeat_hyper_i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
   }
+  result <- result[, result[5, ] > 0]
   result
 }
 
 
 neeat_hyper_i <- function(i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
 {
-  M <- M[i]
   m <- sum(column(func.gene.sets, i) & eval.gene.set)
 
-  avg.score <- n * M / N
-  var.score <- n * (M / N) * ((N - M) / N) * ((N - n) / (N - 1))
-  
-  if (var.score > 0)
-    z.score <- (m - avg.score) / sqrt(var.score)
-  else
-    z.score <- 0
-  
-  p.value <- phyper(m-1, M, N-M, n, lower.tail=F)
-
-  if (neeat.par$verbose)
+  if (m > 0) {
+    M <- M[i]
+    avg.score <- n * M / N
+    var.score <- n * (M / N) * ((N - M) / N) * ((N - n) / (N - 1))
+    if (var.score > 0)
+      z.score <- (m - avg.score) / sqrt(var.score)
+    else
+      z.score <- NA
+    p.value <- phyper(m-1, M, N-M, n, lower.tail=F)
     c(z.score, p.value, avg.score, var.score, m)
-  else
-    c(z.score, p.value)
+  }
+  else {
+    c(NA, 1.0, NA, NA, 0)
+  }
 }
 
