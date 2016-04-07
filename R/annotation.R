@@ -157,8 +157,9 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
     term.info <- rbind(term.info, omim)
   }
   
+  term.info <- cbind(term.info, colSums(data$annotations)[term.info[, 1]])
   rownames(term.info) <- term.info[, 1]
-  colnames(term.info) <- c("ID", "Category", "Term")
+  colnames(term.info) <- c("ID", "Category", "Term", "Size")
   data$term.info <- data.frame(term.info, stringsAsFactors=FALSE)
   
   data
@@ -193,9 +194,9 @@ get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters
     p <- p[order(p[, 2]), ]
   else
     p <- p[order(p[, 2], -z.score[select.term]), ]
-  rank <- cbind(seq_len(nrow(p)), p, term.info[p[, 1], c(2, 3)])
+  rank <- cbind(seq_len(nrow(p)), p, term.info[p[, 1], c(2, 3, 4)])
   rownames(rank) <- rank[, 2]
-  colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term")
+  colnames(rank) <- c("Rank", "ID", "p", adjust.p, "Category", "Term", "Size")
   if (!is.null(filters)) rank <- rank[rank$Category %in% filters, ]
   rank
 }
