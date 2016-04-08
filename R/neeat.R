@@ -19,8 +19,9 @@
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' @param perm.batch The desired number of permutations in each batch of the parallel computation.
 #' 
-#' @return This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.core.sets)[2])},
-#' and each column \code{[,j]} containing the following components for the functional gene set \code{func.gene.sets[,j]}:
+#' @return This function will return a 2-dimensional array of dimensions \code{c(5, n)},
+#' where \code{n (<= dim(func.gene.sets)[2])} is the number of functional gene sets with \code{raw.score > 0},
+#' and each column \code{[,j]} containing the following components for the corresponding functional gene set:
 #'   \item{\code{z.score}}{The Z-score of the functional gene set}
 #'   \item{\code{p.value}}{The statistic significance of the functional gene set}
 #'   \item{\code{avg.score}}{The average score in random permutations}
@@ -56,9 +57,9 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   if (method == "neeat") {
     neeat.par$rho <- c(0, rho^(0:max.depth))
     depths <- neeat_depths(eval.gene.set, net, max.depth)
-    raw.score <- as.numeric(neeat.par$rho[depths + 2] %*% func.gene.sets)
-    func.gene.sets <- func.gene.sets[, raw.score > 0, drop=F]
-    raw.score <- raw.score[raw.score > 0]
+    scores <- as.numeric(neeat.par$rho[depths + 2] %*% func.gene.sets)
+    fgs <- func.gene.sets[, scores > 0, drop=F]
+    raw.score <- scores[scores > 0]
     if (n.cpu > 1) {
       if (.Platform$OS.type == "windows")
         cl <- makeCluster(n.cpu)
@@ -66,12 +67,12 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
         cl <- makeForkCluster(n.cpu)
       n.cpu <- length(cl)
       neeat.par$n.perm <- ceiling(n.perm / n.cpu)
-      perm.score <- clusterCall(cl, neeat_perm, eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
+      perm.score <- clusterCall(cl, neeat_perm, eval.gene.set, fgs, net, raw.score, neeat.par)
       stopCluster(cl)
       perm.score <- matrix(rowMeans(matrix(unlist(perm.score), ncol=n.cpu)), nrow=3)
     }
     else {
-      perm.score <- neeat_perm(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
+      perm.score <- neeat_perm(eval.gene.set, fgs, net, raw.score, neeat.par)
     }
     z.score <- (raw.score - perm.score[2, ]) / sqrt(perm.score[3, ])
     result <- rbind(z.score, perm.score, raw.score)
