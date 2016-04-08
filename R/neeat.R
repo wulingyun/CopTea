@@ -19,8 +19,7 @@
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' @param perm.batch The desired number of permutations in each batch of the parallel computation.
 #' 
-#' @return This function will return a 2-dimensional array of dimensions \code{c(5, n)},
-#' where \code{n (<= dim(func.gene.sets)[2])} is the number of functional gene sets with \code{raw.score > 0},
+#' @return This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.gene.sets)[2])},
 #' and each column \code{[,j]} containing the following components for the corresponding functional gene set:
 #'   \item{\code{z.score}}{The Z-score of the functional gene set}
 #'   \item{\code{p.value}}{The statistic significance of the functional gene set}
@@ -58,8 +57,9 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     neeat.par$rho <- c(0, rho^(0:max.depth))
     depths <- neeat_depths(eval.gene.set, net, max.depth)
     scores <- as.numeric(neeat.par$rho[depths + 2] %*% func.gene.sets)
-    fgs <- func.gene.sets[, scores > 0, drop=F]
-    raw.score <- scores[scores > 0]
+    fgs.sel <- scores > 0
+    fgs <- func.gene.sets[, fgs.sel, drop=F]
+    raw.score <- scores[fgs.sel]
     if (n.cpu > 1) {
       if (.Platform$OS.type == "windows")
         cl <- makeCluster(n.cpu)
@@ -75,7 +75,8 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
       perm.score <- neeat_perm(eval.gene.set, fgs, net, raw.score, neeat.par)
     }
     z.score <- (raw.score - perm.score[2, ]) / sqrt(perm.score[3, ])
-    result <- rbind(z.score, perm.score, raw.score)
+    result <- matrix(c(NA, 1.0, NA, NA, 0.0), nrow = 5, ncol = dim(func.gene.sets)[2])
+    result[, fgs.sel] <- rbind(z.score, perm.score, raw.score)
   }
   else if (method == "neeat_h1") {
     egs <- Matrix(neeat_depths(eval.gene.set, net, max.depth) >= 0, sparse=T)
@@ -140,7 +141,6 @@ neeat_hyper <- function(eval.gene.set, func.gene.sets, neeat.par)
   else {
     result <- sapply(jobs, neeat_hyper_i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
   }
-  result <- result[, result[5, ] > 0]
   result
 }
 
@@ -161,7 +161,7 @@ neeat_hyper_i <- function(i, N, n, M, eval.gene.set, func.gene.sets, neeat.par)
     c(z.score, p.value, avg.score, var.score, m)
   }
   else {
-    c(NA, 1.0, NA, NA, 0)
+    c(NA, 1.0, NA, NA, 0.0)
   }
 }
 

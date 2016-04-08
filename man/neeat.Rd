@@ -33,8 +33,7 @@ Ignored in the models "neeat_h1", "neeat_h2" and "hyper".}
 \item{perm.batch}{The desired number of permutations in each batch of the parallel computation.}
 }
 \value{
-This function will return a 2-dimensional array of dimensions \code{c(5, n)},
-where \code{n (<= dim(func.gene.sets)[2])} is the number of functional gene sets with \code{raw.score > 0},
+This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.gene.sets)[2])},
 and each column \code{[,j]} containing the following components for the corresponding functional gene set:
   \item{\code{z.score}}{The Z-score of the functional gene set}
   \item{\code{p.value}}{The statistic significance of the functional gene set}
