@@ -15,7 +15,7 @@
 #' @param rho The weight parameter for depths.
 #' @param n.perm The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
 #' Ignored in the models "neeat_h1", "neeat_h2" and "hyper".
-#' @param verbose Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.
+#' @param keep.degree Logical variable indicated whether keep the degree distribution as much as possible in permutations.
 #' @param n.cpu The number of CPUs/cores used in the parallel computation.
 #' @param perm.batch The desired number of permutations in each batch of the parallel computation.
 #' 
@@ -34,7 +34,7 @@
 #' @export
 neeat <- function(eval.gene.set, func.gene.sets, net,
                   method = "neeat", max.depth = 1, rho = 1.0, n.perm = 100000,
-                  verbose = FALSE, n.cpu = 1, perm.batch = 5000)
+                  keep.degree = TRUE, n.cpu = 1, perm.batch = 5000)
 {
   if (!is.null(dim(eval.gene.set)))
     eval.gene.set <- eval.gene.set[, 1]
@@ -49,7 +49,7 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
   neeat.par$max.depth = max.depth
   neeat.par$rho = rho
   neeat.par$n.perm = n.perm
-  neeat.par$verbose = verbose
+  neeat.par$keep.degree = keep.degree
   neeat.par$n.cpu = n.cpu
   neeat.par$perm.batch = perm.batch
   
@@ -106,7 +106,7 @@ neeat_perm <- function(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
   n.perm <- ceiling(neeat.par$n.perm / n.batch)
   perm.score <- list()
   for (i in 1:n.batch) {
-    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, neeat.par$max.depth)
+    depths <- neeat_depths_with_permutation(eval.gene.set, net, n.perm, neeat.par$max.depth, neeat.par$keep.degree)
     score.matrix <- matrix(neeat.par$rho[depths + 2], length(eval.gene.set), n.perm)
     perm.score[[i]] <- sapply(1:dim(func.gene.sets)[2], neeat_i, score.matrix, func.gene.sets, raw.score, n.perm)
   }

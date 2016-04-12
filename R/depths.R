@@ -34,6 +34,7 @@ neeat_depths <- function(seed.node.sets, net, max.depth)
 #' @param net The adjacent matrix of network.
 #' @param n.parm The number of permutations.
 #' @param max.depth Integer for the maximum depth that will be computed.
+#' @param keep.degree Logical variable indicated whether keeping the similar degree distribution in permutaions.
 #'
 #' @return This function returns a matrix with the dimensions \code{c(length(seed.nodes), n.perm+1)}, where the element
 #' \code{[i, 1]} represents the depth of node \code{i}, and \code{[i, j+1]} the depth in permutation \code{j}.
@@ -41,16 +42,32 @@ neeat_depths <- function(seed.node.sets, net, max.depth)
 #' @seealso \code{\link{neeat}}, \code{\link{neeat_depths}}
 #'
 #' @export
-neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1)
+neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1, keep.degree = T)
 {
   n.all <- length(seed.nodes)
   n.seed <- sum(seed.nodes)
-  vi <- integer(n.perm*n.seed)
-  for (i in 1:n.perm)
-    vi[(i-1)*n.seed + (1:n.seed)] <- sample.int(n.all, n.seed)
+  if (keep.degree) {
+    k.nb <- min(10, n.all-1)
+    d.all <- colSums(net)
+    d.seed <- d.all[seed.nodes]
+    perm.list <- lapply(d.seed, get_perm_list, d.all, k.nb)
+    vi <- replicate(n.perm, sapply(perm.list, sample, 1))
+  }
+  else {
+    vi <- replicate(n.perm, sample.int(n.all, n.seed))
+  }
   vj <- rep(1:n.perm, each = n.seed)
   seed.perm <- sparseMatrix(vi, vj, x=T, dims=c(n.all, n.perm))
   neeat_depths(seed.perm, net, max.depth)
+}
+
+get_perm_list <- function(d.seed, d.all, k.nb)
+{
+  d.diff <- abs(d.all - d.seed)
+  d.range <- d.diff[order(d.diff)][k.nb+1]
+  d.max <- d.seed + d.range
+  d.min <- d.seed - d.range
+  which(d.all >= d.min & d.all <= d.max)
 }
 
 
