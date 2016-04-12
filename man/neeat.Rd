@@ -5,7 +5,7 @@
 \title{Network enhanced enrichment analysis tool}
 \usage{
 neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
-  rho = 1, n.perm = 1e+05, verbose = FALSE, n.cpu = 1,
+  rho = 1, n.perm = 1e+05, keep.degree = TRUE, n.cpu = 1,
   perm.batch = 5000)
 }
 \arguments{
@@ -26,7 +26,7 @@ Use "hyper" for traditional hypergeometric test, in which the network informatio
 \item{n.perm}{The number of permutations for calculating p-values. Minimum value 100 is required for the model "neeat".
 Ignored in the models "neeat_h1", "neeat_h2" and "hyper".}
 
-\item{verbose}{Logical variable indicated whether output the full statistics, such as avg.score, var.score and raw.score.}
+\item{keep.degree}{Logical variable indicated whether keep the degree distribution as much as possible in permutations.}
 
 \item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 
