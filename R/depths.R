@@ -47,11 +47,12 @@ neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1
   n.all <- length(seed.nodes)
   n.seed <- sum(seed.nodes)
   if (keep.degree) {
-    k.nb <- min(10, n.all-1)
+    k.nb <- min(10, n.all-n.seed)
     d.all <- colSums(net)
     d.seed <- d.all[seed.nodes]
-    perm.list <- lapply(d.seed, get_perm_list, d.all, k.nb)
-    vi <- replicate(n.perm, sapply(perm.list, sample, 1))
+    d.other <- d.all[!seed.nodes]
+    perm.list <- lapply(d.seed, get_perm_candidates, d.all, d.other, k.nb)
+    vi <- replicate(n.perm, sample_list_without_replace(perm.list))
   }
   else {
     vi <- replicate(n.perm, sample.int(n.all, n.seed))
@@ -61,13 +62,35 @@ neeat_depths_with_permutation <- function(seed.nodes, net, n.perm, max.depth = 1
   neeat_depths(seed.perm, net, max.depth)
 }
 
-get_perm_list <- function(d.seed, d.all, k.nb)
+get_perm_candidates <- function(d, d.all, d.other, k.nb)
 {
-  d.diff <- abs(d.all - d.seed)
-  d.range <- d.diff[order(d.diff)][k.nb+1]
-  d.max <- d.seed + d.range
-  d.min <- d.seed - d.range
+  d.diff <- abs(d.other - d)
+  d.range <- d.diff[order(d.diff)][k.nb]
+  d.max <- d + d.range
+  d.min <- d - d.range
   which(d.all >= d.min & d.all <= d.max)
+}
+
+sample_list_without_replace <- function(perm.list)
+{
+  perm <- sapply(perm.list, sample_i, 1)
+  dup <- duplicated(perm)
+  while (sum(dup) > 0) {
+    print(perm)
+    p.dup <- perm.list[dup]
+    p.dup <- lapply(p.dup, setdiff, perm)
+    perm[dup] <- sapply(p.dup, sample_i, 1)
+    dup <- duplicated(perm)
+  }
+  perm
+}
+
+sample_i <- function(x, ...)
+{
+  if (length(x) > 0)
+    x[sample.int(length(x), ...)]
+  else
+    stop("Attempt to sample from empty set!")
 }
 
 
