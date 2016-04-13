@@ -76,7 +76,6 @@ sample_list_without_replace <- function(perm.list)
   perm <- sapply(perm.list, sample_i, 1)
   dup <- duplicated(perm)
   while (sum(dup) > 0) {
-    print(perm)
     p.dup <- perm.list[dup]
     p.dup <- lapply(p.dup, setdiff, perm)
     perm[dup] <- sapply(p.dup, sample_i, 1)
