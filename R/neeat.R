@@ -100,6 +100,25 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
 }
 
 
+#' @rdname neeat
+#' @aliases neeat_batch
+#' 
+#' @param eval.gene.sets Logical matrix, each column indicated a gene set for evaluating.
+#' @param ... Optional arguments to \code{neeat}.
+#' 
+#' @return \code{neeat_batch} will return a list of 2-dimensional arrays, each for an evaluating gene set.
+#' 
+#' @export
+neeat_batch <- function(eval.gene.sets, ...)
+{
+  if (is.null(dim(eval.gene.sets)))
+    eval.gene.sets <- Matrix(as.logical(eval.gene.sets))
+  result <- lapply(1:dim(eval.gene.sets)[2], function(i) neeat(column(eval.gene.sets, i), ...))
+  names(result) <- colnames(eval.gene.sets)
+  result
+}
+
+
 neeat_perm <- function(eval.gene.set, func.gene.sets, net, raw.score, neeat.par)
 {
   n.batch <- ceiling(neeat.par$n.perm / neeat.par$perm.batch)

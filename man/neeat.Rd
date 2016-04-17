@@ -2,11 +2,14 @@
 % Please edit documentation in R/neeat.R
 \name{neeat}
 \alias{neeat}
+\alias{neeat_batch}
 \title{Network enhanced enrichment analysis tool}
 \usage{
 neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
   rho = 1, n.perm = 1e+05, keep.degree = TRUE, n.cpu = 1,
   perm.batch = 5000)
+
+neeat_batch(eval.gene.sets, ...)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}
@@ -31,6 +34,10 @@ Ignored in the models "neeat_h1", "neeat_h2" and "hyper".}
 \item{n.cpu}{The number of CPUs/cores used in the parallel computation.}
 
 \item{perm.batch}{The desired number of permutations in each batch of the parallel computation.}
+
+\item{eval.gene.sets}{Logical matrix, each column indicated a gene set for evaluating.}
+
+\item{...}{Optional arguments to \code{neeat}.}
 }
 \value{
 This function will return a 2-dimensional array of dimensions \code{c(5, dim(func.gene.sets)[2])},
@@ -40,6 +47,8 @@ and each column \code{[,j]} containing the following components for the correspo
   \item{\code{avg.score}}{The average score in random permutations}
   \item{\code{var.score}}{The variance of scores in random permutations}
   \item{\code{raw.score}}{The raw score of the functional gene set}
+
+\code{neeat_batch} will return a list of 2-dimensional arrays, each for an evaluating gene set.
 }
 \description{
 Functional enrichment anslysis of gene sets by integrating network information
