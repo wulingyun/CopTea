@@ -9,6 +9,7 @@
 #' @param func.gene.sets Logical matrix indicated the functional gene sets associated with specific functions or pathways.
 #' The rows correspond to genes, while the columns represent the functions or pathways.
 #' @param net The adjacent matrix of network.
+#' @param bg.gene.set Logical vector indicated the background gene set.
 #' @param method A string indicated the NEEAT model, including "neeat", "neeat_h1", "neeat_h2" and "hyper". 
 #' Use "hyper" for traditional hypergeometric test, in which the network information is ignored.
 #' @param max.depth Integer for the maximum depth considered in the NEEAT models.
@@ -32,7 +33,7 @@
 #' @import Matrix parallel
 #'
 #' @export
-neeat <- function(eval.gene.set, func.gene.sets, net,
+neeat <- function(eval.gene.set, func.gene.sets, net, bg.gene.set = NULL,
                   method = "neeat", max.depth = 1, rho = 1.0, n.perm = 100000,
                   keep.degree = TRUE, n.cpu = 1, perm.batch = 5000)
 {
@@ -42,6 +43,14 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
     func.gene.sets <- Matrix(as.logical(func.gene.sets))
   if (length(eval.gene.set) != dim(func.gene.sets)[1])
     stop("length(eval.gene.set) != dim(func.gene.sets)[1]!")
+
+  if (!is.null(bg.gene.set)) {
+    if (!is.null(dim(bg.gene.set)))
+      bg.gene.set <- bg.gene.set[, 1]
+    eval.gene.set <- eval.gene.set[bg.gene.set]
+    func.gene.sets <- func.gene.sets[bg.gene.set, , drop=F]
+  }
+
   max.depth <- max(0, max.depth)
   n.perm <- max(100, n.perm)
   
@@ -104,16 +113,22 @@ neeat <- function(eval.gene.set, func.gene.sets, net,
 #' @aliases neeat_batch
 #' 
 #' @param eval.gene.sets Logical matrix, each column indicated a gene set for evaluating.
+#' @param bg.gene.sets Logical matrix, each column indicated the background gene set for corresponding
+#' evaluating gene set.
 #' @param ... Optional arguments to \code{neeat}.
 #' 
 #' @return \code{neeat_batch} will return a list of 2-dimensional arrays, each for an evaluating gene set.
 #' 
 #' @export
-neeat_batch <- function(eval.gene.sets, ...)
+neeat_batch <- function(eval.gene.sets, bg.gene.sets = NULL, ...)
 {
   if (is.null(dim(eval.gene.sets)))
     eval.gene.sets <- Matrix(as.logical(eval.gene.sets))
-  result <- lapply(1:dim(eval.gene.sets)[2], function(i) neeat(column(eval.gene.sets, i), ...))
+  if (!is.null(bg.gene.sets) && is.null(dim(bg.gene.sets)))
+    bg.gene.sets <- Matrix(as.logical(bg.gene.sets))
+  if (any(dim(eval.gene.sets) != dim(bg.gene.sets)))
+    stop("dim(eval.gene.set) != dim(bg.gene.sets)!")
+  result <- lapply(1:dim(eval.gene.sets)[2], function(i) neeat(column(eval.gene.sets, i), bg.gene.set = column(bg.gene.sets, i), ...))
   names(result) <- colnames(eval.gene.sets)
   result
 }
