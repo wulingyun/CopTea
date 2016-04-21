@@ -49,6 +49,7 @@ neeat <- function(eval.gene.set, func.gene.sets, net, bg.gene.set = NULL,
       bg.gene.set <- bg.gene.set[, 1]
     eval.gene.set <- eval.gene.set[bg.gene.set]
     func.gene.sets <- func.gene.sets[bg.gene.set, , drop=F]
+    net <- net[bg.gene.set, bg.gene.set]
   }
 
   max.depth <- max(0, max.depth)
