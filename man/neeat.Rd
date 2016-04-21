@@ -5,11 +5,11 @@
 \alias{neeat_batch}
 \title{Network enhanced enrichment analysis tool}
 \usage{
-neeat(eval.gene.set, func.gene.sets, net, method = "neeat", max.depth = 1,
-  rho = 1, n.perm = 1e+05, keep.degree = TRUE, n.cpu = 1,
-  perm.batch = 5000)
+neeat(eval.gene.set, func.gene.sets, net, bg.gene.set = NULL,
+  method = "neeat", max.depth = 1, rho = 1, n.perm = 1e+05,
+  keep.degree = TRUE, n.cpu = 1, perm.batch = 5000)
 
-neeat_batch(eval.gene.sets, ...)
+neeat_batch(eval.gene.sets, bg.gene.sets = NULL, ...)
 }
 \arguments{
 \item{eval.gene.set}{Logical vector indicated the gene set for evaluating.}
@@ -18,6 +18,8 @@ neeat_batch(eval.gene.sets, ...)
 The rows correspond to genes, while the columns represent the functions or pathways.}
 
 \item{net}{The adjacent matrix of network.}
+
+\item{bg.gene.set}{Logical vector indicated the background gene set.}
 
 \item{method}{A string indicated the NEEAT model, including "neeat", "neeat_h1", "neeat_h2" and "hyper". 
 Use "hyper" for traditional hypergeometric test, in which the network information is ignored.}
@@ -36,6 +38,9 @@ Ignored in the models "neeat_h1", "neeat_h2" and "hyper".}
 \item{perm.batch}{The desired number of permutations in each batch of the parallel computation.}
 
 \item{eval.gene.sets}{Logical matrix, each column indicated a gene set for evaluating.}
+
+\item{bg.gene.sets}{Logical matrix, each column indicated the background gene set for corresponding
+evaluating gene set.}
 
 \item{...}{Optional arguments to \code{neeat}.}
 }
