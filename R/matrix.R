@@ -64,6 +64,27 @@ column <- function(m, i)
 }
 
 
+#' Extract a sub-matrix from a matrix
+#' 
+#' Extract a specified sub-matrix from a sparse matrix rapidly
+#' 
+#' This function use faster extraction algorithm for the \code{\link[=CsparseMatrix-class]{CsparseMatrix}} class in the package \pkg{Matrix}.
+#' 
+#' @param m The matrix
+#' @param rows The row indexes
+#' @param cols The column indexes
+#' 
+#' @return This function will return the specified sub-matrix as a matrix of corresponding type.
+#' 
+#' @import Matrix
+#' 
+#' @export
+submatrix <- function(m, rows, cols)
+{
+  sapply(cols, function(i) column(m, i)[rows])
+}
+
+
 nnzero <- function(m, r, c)
 {
   in.r <- if (missing(r)) function(i) T else function(i) r[i]
