@@ -1,8 +1,8 @@
-Package: NEEAT
+Package: CopTea
 Version: 0.3-0
-Title: NEEAT - Network Enhanced Enrichment Analysis Tool
-Description: This package provides the network enhanced enrichment analysis
-    tool for biomedical research.
+Title: Combinatrial OPTimization based Enrichment Analysis
+Description: Provides several combinatorial optimization based enrichment analysis
+    tools for biomedical research.
 Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
     "wulingyun@gmail.com"))
 ByteCompile: TRUE
@@ -15,5 +15,5 @@ Suggests:
     AnnotationDbi,
     org.Hs.eg.db
 License: GPL (>= 2)
-URL: http://r-forge.r-project.org/projects/neeat/
+URL: http://r-forge.r-project.org/projects/coptea/
 RoxygenNote: 5.0.1
