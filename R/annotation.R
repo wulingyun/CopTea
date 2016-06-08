@@ -14,7 +14,7 @@
 #' network from STRING database.
 #' 
 #' @return This function will return a list with the following components:
-#'   \item{annotations}{A logical matrix indicated the annotations, with each row represents 
+#'   \item{anno.matrix}{A logical matrix indicated the annotations, with each row represents 
 #'   a gene and each column denotes a term. The row names and column names are set as the 
 #'   corresponding gene and term ID respectively.} 
 #'   \item{network}{A logical matrix indicated the association (interaction) between genes, 
@@ -106,9 +106,9 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
     map <- rbind(map, map.OMIM)
   }
   
-  data$annotations <- toMatrix(map)
-  data$genes <- rownames(data$annotations)
-  data$terms <- colnames(data$annotations)
+  data$anno.matrix <- toMatrix(map)
+  data$genes <- rownames(data$anno.matrix)
+  data$terms <- colnames(data$anno.matrix)
   
   map <- as.matrix(toTable(db.PROT))
   
@@ -157,7 +157,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
     term.info <- rbind(term.info, omim)
   }
   
-  term.info <- cbind(term.info, colSums(data$annotations)[term.info[, 1]])
+  term.info <- cbind(term.info, colSums(data$anno.matrix)[term.info[, 1]])
   rownames(term.info) <- term.info[, 1]
   colnames(term.info) <- c("ID", "Category", "Term", "Size")
   data$term.info <- data.frame(term.info, stringsAsFactors=FALSE)
@@ -206,31 +206,81 @@ get_significant_terms <- function(p.values, term.info, threshold = 0.05, filters
 #'
 #' Extract the genes associated with terms from the annotation matrix.
 #'
-#' @param annotations A logical matrix indicated the annotations, with each row represents a gene and each column denotes a term.
+#' @param anno.matrix A logical matrix indicated the annotations, with each row represents a gene and each column denotes a term.
 #'  The row names and column names are set as the corresponding gene and term ID respectively.
-#'  See \code{\link{get_annotation}} for more information.
+#'  See \code{\link{get_annotations}} for more information.
 #' @param species A string indicated the species name used for translating gene ID to symbols.
 #' @param gene.symbol A logical variable indicated whether use the gene symbol in the output instead of the central ID.
 #' 
 #' @return This function will return a vector of strings, which is the concatenated IDs (or symbols) of the genes annotated
 #' by the corresponding term.
 #'  
-#' @seealso \code{\link{get_annotation}}
+#' @seealso \code{\link{get_annotations}}
 #'
 #' @export
-get_annotated_genes <- function(annotations, species = "Human", gene.symbol = TRUE)
+get_annotated_genes <- function(anno.matrix, species = "Human", gene.symbol = TRUE)
 {
-  genes <- rownames(annotations)
+  genes <- rownames(anno.matrix)
   if (gene.symbol) {
     ids <- genes
     symbols <- id_symbols(ids, species)
     genes <- symbols[ids]
     genes[is.na(genes)] <- ids[is.na(genes)]
   }
-  terms <- colnames(annotations)
-  gene.list <- sapply(seq_along(terms), function(i) paste(genes[annotations[, i]], collapse=", "))
+  terms <- colnames(anno.matrix)
+  gene.list <- sapply(seq_along(terms), function(i) paste(genes[anno.matrix[, i]], collapse=", "))
   names(gene.list) <- terms
   gene.list
+}
+
+
+#' Extract GO temrs information from GO annotation
+#'
+#' Generate the annotation matrix from an object of class "Go3AnnDbBimap" in Bioconductor annotation package.
+#'
+#' This function generates the annotation matrix required by enrichment analysis methods.
+#' 
+#' @param go.map An object of class "Go3AnnDbBimap".
+#' @param evidence Vector of string to filter the GO annotations, could be "ALL" or a set of evidence codes.
+#' @param category Vector of string to filter the GO categories, could be "ALL" or a set of GO categories.
+#' @param gene.set Vector of string to filter the genes.
+#' 
+#' @return This function returns a sparse matrix as required by enrichment analysis methods,
+#' with each row represents a gene and each column denotes a term.
+#' The row names and column names are set as the corresponding gene and term ID respectively.
+#' 
+#' @seealso \code{\link{cea}}, \code{\link{netgen}}
+#'
+#' @examples
+#' 
+#' \dontrun{
+#' source("http://bioconductor.org/biocLite.R")
+#' biocLite("org.Hs.eg.db")
+#' library(org.Hs.eg.db)
+#' x <- get_GO_annotations(org.Hs.egGO2ALLEGS)
+#' }
+#'
+#' @import Matrix
+#' 
+#' @export
+get_GO_annotations <- function(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
+{
+  term.table <- AnnotationDbi::toTable(go.map)
+  term.table[,1] <- toupper(term.table[,1])
+  
+  if (evidence != "ALL")
+    term.table <- term.table[term.table[,3] %in% evidence, ]
+  
+  if (category != "ALL")
+    term.table <- term.table[term.table[,4] %in% category, ]
+  
+  if (!is.null(gene.set)) {
+    all.gene <- gene.set    
+  }
+  else
+    all.gene <- unique(term.table[,1])
+  
+  toMatrix(term.table, all.gene)
 }
 
 

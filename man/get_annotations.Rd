@@ -23,7 +23,7 @@ network from STRING database.}
 }
 \value{
 This function will return a list with the following components:
-  \item{annotations}{A logical matrix indicated the annotations, with each row represents 
+  \item{anno.matrix}{A logical matrix indicated the annotations, with each row represents 
   a gene and each column denotes a term. The row names and column names are set as the 
   corresponding gene and term ID respectively.} 
   \item{network}{A logical matrix indicated the association (interaction) between genes, 

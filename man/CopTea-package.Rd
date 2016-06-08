@@ -4,7 +4,7 @@
 \name{CopTea-package}
 \alias{CopTea}
 \alias{CopTea-package}
-\title{CopTea - Combinatorial optimization based enrichment analysis tools}
+\title{CopTea - Combinatorial optimization based enrichment analysis}
 \description{
 This package provides several combinatorial optimization based enrichment analysis
 tools for biomedical research.

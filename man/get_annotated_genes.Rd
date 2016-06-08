@@ -4,12 +4,12 @@
 \alias{get_annotated_genes}
 \title{Get annotated gene list}
 \usage{
-get_annotated_genes(annotations, species = "Human", gene.symbol = TRUE)
+get_annotated_genes(anno.matrix, species = "Human", gene.symbol = TRUE)
 }
 \arguments{
-\item{annotations}{A logical matrix indicated the annotations, with each row represents a gene and each column denotes a term.
+\item{anno.matrix}{A logical matrix indicated the annotations, with each row represents a gene and each column denotes a term.
 The row names and column names are set as the corresponding gene and term ID respectively.
-See \code{\link{get_annotation}} for more information.}
+See \code{\link{get_annotations}} for more information.}
 
 \item{species}{A string indicated the species name used for translating gene ID to symbols.}
 
@@ -23,6 +23,6 @@ by the corresponding term.
 Extract the genes associated with terms from the annotation matrix.
 }
 \seealso{
-\code{\link{get_annotation}}
+\code{\link{get_annotations}}
 }
 
