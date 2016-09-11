@@ -1,4 +1,5 @@
 library(Matrix)
+library(CopTea)
 setwd("netgen")
 load("annotation.RData")								# The example annotation matrix contains 300 biological processes categories.
 load("adjacent_matrix.RData")							# The adjacent matrix of a protein-protein interaction network.

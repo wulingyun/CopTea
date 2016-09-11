@@ -6,14 +6,9 @@ Description: Provides several combinatorial optimization based enrichment analys
 Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
     "wulingyun@gmail.com"))
 ByteCompile: TRUE
-Depends:
-    R (>= 3.0.2)
-Imports:
-    Matrix (>= 1.0-14),
-    parallel (>= 3.0.2)
-Suggests:
-    AnnotationDbi,
-    org.Hs.eg.db
+Depends: R (>= 3.0.2)
+Imports: Matrix, parallel, glpkAPI
+Suggests: AnnotationDbi, org.Hs.eg.db
 License: GPL (>= 2)
 BugReports: https://github.com/wulingyun/CopTea/issues
 URL: https://github.com/wulingyun/CopTea
