@@ -19,7 +19,7 @@
 #' @docType package
 #' @keywords package
 #' 
-#' @references Ling-Yun Wu. Combinatiral optimization based enrichment analysis tool. Manuscript,
+#' @references Ling-Yun Wu. Combinatorial optimization based enrichment analysis tool. Manuscript,
 #' 2016.
 #' 
 #' @useDynLib CopTea, .registration = TRUE

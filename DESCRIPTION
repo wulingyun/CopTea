@@ -1,6 +1,6 @@
 Package: CopTea
 Version: 0.3-0
-Title: Combinatrial OPTimization based Enrichment Analysis
+Title: Combinatorial OPTimization based Enrichment Analysis
 Description: Provides several combinatorial optimization based enrichment analysis
     tools for biomedical research.
 Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
