@@ -19,7 +19,7 @@
 #' @export
 read_net <- function(file)
 {
-  net.text <- as.matrix(read.table(file, fill=T, as.is=T, col.names=1:max(count.fields(file))))
+  net.text <- as.matrix(utils::read.table(file, fill=T, as.is=T, col.names=1:max(utils::count.fields(file))))
   net.node <- unique(as.character(net.text))
   net.node <- net.node[net.node != ""]
   net.edge <- cbind(as.character(net.text[,1]), as.character(net.text[,-1]))
@@ -52,7 +52,7 @@ write_net <- function(net, file)
 {
   net.edge <- which(net$matrix != 0, arr.ind=1)
   net.edge <- matrix(net$node[net.edge], ncol=2)
-  write.table(net.edge, file, quote=F, row.names=F, col.names=F)
+  utils::write.table(net.edge, file, quote=F, row.names=F, col.names=F)
 }
 
 

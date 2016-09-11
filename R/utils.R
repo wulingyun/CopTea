@@ -2,17 +2,15 @@
 #'
 #' Generate the gene sets matrix from several gene lists.
 #'
-#' This function generates the \code{gene.sets} matrix required by \code{\link{neeat}} method.
+#' This function generates the \code{gene.sets} matrix required by enrichment analysis functions.
 #' The name of each gene set is given by the name of corresponding component of \code{gene.lists},
 #' and assigned to the column of \code{gene.sets}.
 #' 
 #' @param gene.lists A list of vectors of gene ids.
 #' @param all.gene A vector of all gene ids.
 #' 
-#' @return This function returns a sparse matrix as required by \code{\link{neeat}} method.
+#' @return This function returns a sparse matrix as required by enrichment analysis functions.
 #' 
-#' @seealso \code{\link{neeat}}
-#'
 #' @import Matrix
 #' 
 #' @export

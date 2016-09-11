@@ -5,14 +5,14 @@
 id_mapping_from_symbol <- function(symbols, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
-    require(org.Hs.eg.db)
-    db.SYMBOL <- org.Hs.egSYMBOL2EG
-    db.ALIAS <- org.Hs.egALIAS2EG
+    require_bioc("org.Hs.eg.db")
+    db.SYMBOL <- org.Hs.eg.db::org.Hs.egSYMBOL2EG
+    db.ALIAS <- org.Hs.eg.db::org.Hs.egALIAS2EG
   }
   else if (species == "Mouse") {
-    require(org.Mm.eg.db)
-    db.SYMBOL <- org.Mm.egSYMBOL2EG
-    db.ALIAS <- org.Mm.egALIAS2EG
+    require_bioc("org.Mm.eg.db")
+    db.SYMBOL <- org.Mm.eg.db::org.Mm.egSYMBOL2EG
+    db.ALIAS <- org.Mm.eg.db::org.Mm.egALIAS2EG
   }
   else {
     stop("Unsupported species!")
@@ -37,12 +37,12 @@ id_mapping_from_symbol <- function(symbols, species = "Human", warning.unmapped 
 id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE)
 {
   if (species == "Human") {
-    require(org.Hs.eg.db)
-    db.SYMBOL <- org.Hs.egSYMBOL
+    require_bioc("org.Hs.eg.db")
+    db.SYMBOL <- org.Hs.eg.db::org.Hs.egSYMBOL
   }
   else if (species == "Mouse") {
-    require(org.Mm.eg.db)
-    db.SYMBOL <- org.Mm.egSYMBOL
+    require_bioc("org.Mm.eg.db")
+    db.SYMBOL <- org.Mm.eg.db::org.Mm.egSYMBOL
   }
   else {
     stop("Unsupported species!")
@@ -65,7 +65,7 @@ id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE
 #' @export
 id_mapping <- function(id, db, from = 1, to = 2)
 {
-  map <- as.matrix(toTable(db))
+  map <- as.matrix(AnnotationDbi::toTable(db))
   id <- toupper(id)
   map[, from] <- toupper(map[, from])
   match <- map[, from] %in% id

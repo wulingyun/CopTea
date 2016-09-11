@@ -45,7 +45,7 @@ netgen <- function(annotation, PPI, active_gene, p1, p2, q, alpha = 3, trace=TRU
 			M <- length(function_gene)										# Gene number in a same GO term, which owns the same function.
 			n <- length(active_gene)										# Active gene number.
 			k <- length(intersect(active_gene,function_gene))				# The intersection set of active gene and a GO term.
-			pvalue[j] <- phyper(k-1,M, N-M, n, lower.tail=FALSE)
+			pvalue[j] <- stats::phyper(k-1,M, N-M, n, lower.tail=FALSE)
 		}
 		sp <- sort(pvalue,index.return=T)
 		tmp_result <- matrix(0,length(Enriched_term),2,dimnames=list(1:length(Enriched_term),c("GO ID","p-value")))
@@ -81,7 +81,7 @@ netgen <- function(annotation, PPI, active_gene, p1, p2, q, alpha = 3, trace=TRU
 				M <- length(function_gene)										# Gene number in a same GO term, which owns the same function.
 				n <- length(active_gene)										# Active gene number.
 				k <- length(intersect(active_gene,function_gene))				# The intersection set of active gene and a GO term.
-				pvalue[j] <- phyper(k-1,M, N-M, n, lower.tail=FALSE)
+				pvalue[j] <- stats::phyper(k-1,M, N-M, n, lower.tail=FALSE)
 			}
 			sp <- sort(pvalue,index.return=T)
 			tmp_result <- matrix(0,length(Enriched_term),2,dimnames=list(1:length(Enriched_term),c("GO ID","p-value")))
@@ -96,7 +96,7 @@ netgen <- function(annotation, PPI, active_gene, p1, p2, q, alpha = 3, trace=TRU
 			M <- length(function_gene)											# Gene number in a same GO term, which owns the same function.
 			n <- length(active_gene)											# Active gene number.
 			k <- length(intersect(active_gene,function_gene))					# The intersection set of active gene and a GO term.
-			combined_p[i] <- phyper(k-1,M, N-M, n, lower.tail=FALSE)			# equivalent to phyper(k-1,n, N-n, M, lower.tail=FALSE) 
+			combined_p[i] <- stats::phyper(k-1,M, N-M, n, lower.tail=FALSE)			# equivalent to phyper(k-1,n, N-n, M, lower.tail=FALSE) 
 		}
 		fresult <- list()
 		fresult[['mix_result']] <- result

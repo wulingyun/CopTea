@@ -38,6 +38,6 @@ x <- get_GO_annotations(org.Hs.egGO2ALLEGS)
 
 }
 \seealso{
-\code{\link{cea}}, \code{\link{netgen}}
+\code{\link{netgen}}
 }
 

@@ -1,4 +1,4 @@
-#include "NEEAT.h"
+#include "CopTea.h"
 
 SEXP NE_ColSums(SEXP _Matrix, SEXP _RowSel)
 {

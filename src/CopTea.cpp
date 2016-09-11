@@ -1,4 +1,4 @@
-#include "NEEAT.h"
+#include "CopTea.h"
 
 const R_CallMethodDef callMethods[] = {
   {"RMultiHyper", (DL_FUNC) &RMultiHyper, 3},
@@ -10,7 +10,7 @@ const R_CallMethodDef callMethods[] = {
   {NULL, NULL, 0}
 };
 
-void R_init_NEEAT(DllInfo *info)
+void R_init_CopTea(DllInfo *info)
 {
   R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 }

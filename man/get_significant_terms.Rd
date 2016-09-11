@@ -12,7 +12,7 @@ get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL,
 
 \item{term.info}{The matrix of term information with three columns: Term ID, Term category,
 and Term description. The row names should be set as Term ID. 
-See \code{\link{get_annotation}} for more information.}
+See \code{\link{get_annotations}} for more information.}
 
 \item{threshold}{The threshold of significant p-value.}
 
@@ -29,6 +29,6 @@ This function returns a matrix with four columns: Rank, Term ID, Term category,
 Extract and rank the significant terms with p-values smaller than the given threshold.
 }
 \seealso{
-\code{\link{get_annotation}}
+\code{\link{get_annotations}}
 }
 

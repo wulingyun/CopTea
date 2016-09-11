@@ -6,7 +6,7 @@
 
 extern "C" {
   /* DLL Init */
-  void R_init_NEEAT(DllInfo *info);
+  void R_init_CopTea(DllInfo *info);
 
 	/* Utils */
   SEXP RMultiHyper(SEXP _N, SEXP _M, SEXP _K);

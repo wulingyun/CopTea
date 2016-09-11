@@ -1,4 +1,4 @@
-#include "NEEAT.h"
+#include "CopTea.h"
 
 inline int *GetDepth(int *edges, int *index, int nEdges, int *seed, int nGene, int maxDepth, int *depth)
 {

@@ -12,17 +12,14 @@ get_gene_sets(gene.lists, all.gene)
 \item{all.gene}{A vector of all gene ids.}
 }
 \value{
-This function returns a sparse matrix as required by \code{\link{neeat}} method.
+This function returns a sparse matrix as required by enrichment analysis functions.
 }
 \description{
 Generate the gene sets matrix from several gene lists.
 }
 \details{
-This function generates the \code{gene.sets} matrix required by \code{\link{neeat}} method.
+This function generates the \code{gene.sets} matrix required by enrichment analysis functions.
 The name of each gene set is given by the name of corresponding component of \code{gene.lists},
 and assigned to the column of \code{gene.sets}.
-}
-\seealso{
-\code{\link{neeat}}
 }
 
