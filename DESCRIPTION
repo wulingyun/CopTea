@@ -1,13 +1,14 @@
 Package: CopTea
-Version: 0.3-0
+Version: 0.4-0
 Title: Combinatorial OPTimization based Enrichment Analysis
 Description: Provides several combinatorial optimization based enrichment analysis
-    tools for biomedical research.
+    tools for biological and medical research.
 Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
-    "wulingyun@gmail.com"))
+    "wulingyun@gmail.com"), person("Duanchen", "Sun", role = c("aut"), email =
+    "dcsun@amss.ac.cn"))
 ByteCompile: TRUE
 Depends: R (>= 3.0.2)
-Imports: Matrix, parallel, glpkAPI
+Imports: Matrix
 Suggests: AnnotationDbi, org.Hs.eg.db
 License: GPL (>= 2)
 BugReports: https://github.com/wulingyun/CopTea/issues
