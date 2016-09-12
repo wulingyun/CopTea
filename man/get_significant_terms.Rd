@@ -18,6 +18,8 @@ See \code{\link{get_annotations}} for more information.}
 
 \item{filters}{The vector of term categories for filtering terms. Set NULL to disable filter.}
 
+\item{z.score}{The vector of Z-scores associated with p-values, used to sort the terms of same p-values.}
+
 \item{adjust.p}{The method for adjusting p-values for multiple testing. Use "none" for bypassing.
 See \code{\link{p.adjust}} for available methods.}
 }

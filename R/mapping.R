@@ -1,5 +1,16 @@
-#' Mapping gene symbols to central id
+#' Mapping gene symbols to central ids
 #'
+#' Map gene symbols to gene central ids by using organism annotation package in Bioconductor.
+#' 
+#' @param symbols The vector of gene symbols.
+#' @param species The reference species name.
+#' @param warning.unmapped Logical variable indicated whether give warnings when 
+#' there are gene symbols that can not be mapped.
+#' 
+#' @return This function will return a vector of gene ids mapped from given gene symbols.
+#' 
+#' @seealso \code{\link{id_mapping_to_symbol}}, \code{\link{id_mapping}},
+#' \code{\link{id_mapping_species}}
 #'
 #' @export
 id_mapping_from_symbol <- function(symbols, species = "Human", warning.unmapped = TRUE)
@@ -30,8 +41,19 @@ id_mapping_from_symbol <- function(symbols, species = "Human", warning.unmapped 
 }
 
 
-#' Mapping central id to gene symbols
+#' Mapping central ids to gene symbols
 #'
+#' Map gene central ids to gene symbols by using organism annotation package in Bioconductor.
+#' 
+#' @param ids The vector of gene central ids.
+#' @param species The reference species name.
+#' @param warning.unmapped Logical variable indicated whether give warnings when 
+#' there are gene central ids that can not be mapped.
+#' 
+#' @return This function will return a vector of gene symbols mapped from given gene central ids.
+#' 
+#' @seealso \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping}}, 
+#' \code{\link{id_mapping_species}}
 #'
 #' @export
 id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE)
@@ -59,25 +81,47 @@ id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE
 }
 
 
-#' Mapping central id to other id
+#' Mapping between different gene ids
 #'
+#' Map gene ids to other gene ids by using organism annotation package in Bioconductor.
+#' 
+#' @param ids The vector of input gene ids.
+#' @param db The gene id mapping database.
+#' @param from The index of input gene id in the mapping database.
+#' @param to The index of output gene id in the mapping database.
+#' 
+#' @return This function will return a vector of output gene ids mapped from given gene ids.
 #'
+#' @seealso \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping_to_symbol}}, 
+#' \code{\link{id_mapping_species}}
+#' 
 #' @export
-id_mapping <- function(id, db, from = 1, to = 2)
+id_mapping <- function(ids, db, from = 1, to = 2)
 {
   map <- as.matrix(AnnotationDbi::toTable(db))
-  id <- toupper(id)
+  ids <- toupper(ids)
   map[, from] <- toupper(map[, from])
-  match <- map[, from] %in% id
-  id.mapped <- map[match, to]
-  names(id.mapped) <- map[match, from]
-  id.unmapped <- id[!(id %in% names(id.mapped))]
-  list(mapped=id.mapped, unmapped=id.unmapped)
+  match <- map[, from] %in% ids
+  ids.mapped <- map[match, to]
+  names(ids.mapped) <- map[match, from]
+  ids.unmapped <- ids[!(ids %in% names(ids.mapped))]
+  list(mapped=ids.mapped, unmapped=ids.unmapped)
 }
 
 
-#' Mapping gene central id from one species to other species
+#' Mapping gene central ids from one species to other species
 #'
+#' Map gene central ids in one species to other speicies by using organism annotation package in Bioconductor.
+#' 
+#' @param ids The vector of input gene central ids.
+#' @param species.from The species of input gene ids.
+#' @param species.to The species of output gene ids.
+#' @param rm.na Logical variable indicated whether remove NA in the output.
+#' 
+#' @return This function will return a vector of gene central ids mapped from given gene central ids.
+#' 
+#' @seealso \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping_to_symbol}}, 
+#' \code{\link{id_mapping}}
 #'
 #' @export
 id_mapping_species <- function(ids, species.from, species.to, rm.na = FALSE)

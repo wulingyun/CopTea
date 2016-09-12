@@ -2,11 +2,27 @@
 % Please edit documentation in R/mapping.R
 \name{id_mapping_species}
 \alias{id_mapping_species}
-\title{Mapping gene central id from one species to other species}
+\title{Mapping gene central ids from one species to other species}
 \usage{
 id_mapping_species(ids, species.from, species.to, rm.na = FALSE)
 }
+\arguments{
+\item{ids}{The vector of input gene central ids.}
+
+\item{species.from}{The species of input gene ids.}
+
+\item{species.to}{The species of output gene ids.}
+
+\item{rm.na}{Logical variable indicated whether remove NA in the output.}
+}
+\value{
+This function will return a vector of gene central ids mapped from given gene central ids.
+}
 \description{
-Mapping gene central id from one species to other species
+Map gene central ids in one species to other speicies by using organism annotation package in Bioconductor.
+}
+\seealso{
+\code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping_to_symbol}}, 
+\code{\link{id_mapping}}
 }
 

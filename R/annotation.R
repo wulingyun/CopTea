@@ -176,6 +176,7 @@ get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM
 #'  See \code{\link{get_annotations}} for more information.
 #' @param threshold The threshold of significant p-value.
 #' @param filters The vector of term categories for filtering terms. Set NULL to disable filter.
+#' @param z.score The vector of Z-scores associated with p-values, used to sort the terms of same p-values.
 #' @param adjust.p The method for adjusting p-values for multiple testing. Use "none" for bypassing.
 #' See \code{\link{p.adjust}} for available methods.
 #'

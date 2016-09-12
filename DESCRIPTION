@@ -9,8 +9,8 @@ Authors@R: c(person("Ling-Yun", "Wu", role = c("aut", "cre"), email =
 ByteCompile: TRUE
 Depends: R (>= 3.0.2)
 Imports: Matrix
-Suggests: BiocInstaller, AnnotationDbi, STRINGdb, GO.db, reactome.db, KEGG.db, org.Hs.eg.db, org.Mm.eg.db, 
-  org.Sc.sgd.db
+Suggests: BiocInstaller, AnnotationDbi, STRINGdb, GO.db, reactome.db, KEGG.db, 
+  org.Hs.eg.db, org.Mm.eg.db, org.Sc.sgd.db
 License: GPL (>= 2)
 BugReports: https://github.com/wulingyun/CopTea/issues
 URL: https://github.com/wulingyun/CopTea

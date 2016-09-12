@@ -2,11 +2,26 @@
 % Please edit documentation in R/mapping.R
 \name{id_mapping_from_symbol}
 \alias{id_mapping_from_symbol}
-\title{Mapping gene symbols to central id}
+\title{Mapping gene symbols to central ids}
 \usage{
 id_mapping_from_symbol(symbols, species = "Human", warning.unmapped = TRUE)
 }
+\arguments{
+\item{symbols}{The vector of gene symbols.}
+
+\item{species}{The reference species name.}
+
+\item{warning.unmapped}{Logical variable indicated whether give warnings when 
+there are gene symbols that can not be mapped.}
+}
+\value{
+This function will return a vector of gene ids mapped from given gene symbols.
+}
 \description{
-Mapping gene symbols to central id
+Map gene symbols to gene central ids by using organism annotation package in Bioconductor.
+}
+\seealso{
+\code{\link{id_mapping_to_symbol}}, \code{\link{id_mapping}},
+\code{\link{id_mapping_species}}
 }
 
