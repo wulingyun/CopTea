@@ -1,6 +1,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
+using namespace std;
 
 /* Interfaces to R */
 
