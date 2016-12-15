@@ -1,15 +1,16 @@
 ---
 title: "Functional Enrichment Analysis"
 author: "Duanchen Sun, Ling-Yun Wu"
-date: "`r Sys.Date()`"
-output: 
+date: '`r Sys.Date()`'
+output:
+  word_document:
+    toc: yes
   pdf_document:
     latex_engine: xelatex
     number_sections: yes
     toc: yes
-vignette: >
-  %\VignetteIndexEntry{Functional Enrichment Analysis}
-  %\VignetteEngine{knitr::rmarkdown}
+vignette: |
+  %\VignetteIndexEntry{Functional Enrichment Analysis} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 
@@ -47,8 +48,7 @@ load("active_gene.RData")
 ```
 The list consists of 84 active genes which are derived from the true categories as follows.
 ```{r}
-True_Categories <- c("GO:0019614", "GO:1903249", "GO:2000506", "GO:0015985",
-                     "GO:0071962")
+True_Categories <- c("GO:0019614", "GO:1903249", "GO:2000506", "GO:0015985", "GO:0071962")
 ```
 
 ## Mode1: fixed parameter strategy
@@ -86,4 +86,67 @@ Enriched_Categories$Term_combined_pvalue
 And the most enriched categories and its corresponding parameter combination are
 ```{r}
 Enriched_Categories$mix_result[which.min(Enriched_Categories$Term_combined_pvalue)]
+```
+
+# CEA: Combination-based Enrichment Analysis model
+
+CEA is a novel combination-based method for gene set functional enrichment analysis. It is based on a multi-objective optimization framework, and the adapted IMPROVED GREEDY algorithm was used to approximatively solve the problem. 
+
+We first load the required packages
+
+```{r}
+library(CopTea)
+options(scipen=0)
+```
+
+In this example, we use the same GO annotation database and the active gene list.
+```{r}
+load("GO_BP_300.RData")
+load("active_gene.RData")
+```
+
+The list consists of 84 active genes which are derived from the true categories as follows:
+```{r}
+True_Categories <- c("GO:0019614", "GO:1903249", "GO:2000506", "GO:0015985", "GO:0071962")
+```
+
+Note that, not all the active genes are annotated in the annotation matrix.
+```{r}
+sum(active_gene %in% rownames(annotation))
+```
+
+We use the CEA function to identify the most enriched catgories.
+```{r}
+Enrich_result <- CEA(annotation, active_gene, d = 0, times = 5, trace = TRUE)
+```
+
+The result contains the following components:
+```{r}
+names(Enrich_result)
+```
+
+For example, we select the most enriched 5 category sets as the final outputs. These are:
+```{r}
+Enrich_result$category[1:5]
+```
+
+The related Fisher's exact test p-values and coverages are:
+```{r}
+Enrich_result$p.values[1:5]
+Enrich_result$coverage[1:5]
+```
+
+The false negative categories in the first category set are
+```{r}
+setdiff(True_Categories, Enrich_result$category[[1]])
+```
+
+We can obtain a more enriched result by setting a larger tolerance parameter d as:
+```{r}
+Enrich_result <- CEA(annotation, active_gene, d = 1, times = 500, trace = FALSE)
+```
+
+The Fisher's exact test p-value of the most enriched category is:
+```{r}
+Enrich_result$p.values[1]
 ```
