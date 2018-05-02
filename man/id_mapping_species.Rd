@@ -25,4 +25,3 @@ Map gene central ids in one species to other speicies by using organism annotati
 \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping_to_symbol}}, 
 \code{\link{id_mapping}}
 }
-

@@ -47,4 +47,3 @@ Duanchen Sun, Yinliang Liu, Xiang-Sun Zhang, Ling-Yun Wu.
 NetGen: a novel network-based generative model for gene set functional enrichment analysis.
 Manuscript, 2016.
 }
-

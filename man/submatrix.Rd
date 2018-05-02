@@ -22,4 +22,3 @@ Extract a specified sub-matrix from a sparse matrix rapidly
 \details{
 This function use faster extraction algorithm for the \code{\link[=CsparseMatrix-class]{CsparseMatrix}} class in the package \pkg{Matrix}.
 }
-

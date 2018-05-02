@@ -2,8 +2,8 @@
 % Please edit documentation in R/CopTea-package.R
 \docType{package}
 \name{CopTea-package}
-\alias{CopTea}
 \alias{CopTea-package}
+\alias{CopTea}
 \title{CopTea - Combinatorial optimization based enrichment analysis}
 \description{
 This package provides several combinatorial optimization based enrichment analysis
@@ -17,4 +17,3 @@ This package implemented a collection of functional enrichment analysis methods:
 }
 }
 \keyword{package}
-

@@ -25,4 +25,3 @@ Map gene ids to other gene ids by using organism annotation package in Bioconduc
 \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping_to_symbol}}, 
 \code{\link{id_mapping_species}}
 }
-

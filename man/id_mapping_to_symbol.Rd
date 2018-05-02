@@ -24,4 +24,3 @@ Map gene central ids to gene symbols by using organism annotation package in Bio
 \code{\link{id_mapping_from_symbol}}, \code{\link{id_mapping}}, 
 \code{\link{id_mapping_species}}
 }
-

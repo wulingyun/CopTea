@@ -24,4 +24,3 @@ This function build the gene similarity network from the gene annotations, which
 by a core sets matrix. The Cohen's kappa statistic is used to compute the similarity between
 two genes.
 }
-

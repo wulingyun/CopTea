@@ -36,4 +36,3 @@ x <- toMatrix(toTable(org.Hs.egGO2ALLEGS))
 \seealso{
 \code{\link[AnnotationDbi]{toTable}}
 }
-

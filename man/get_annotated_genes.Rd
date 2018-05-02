@@ -25,4 +25,3 @@ Extract the genes associated with terms from the annotation matrix.
 \seealso{
 \code{\link{get_annotations}}
 }
-

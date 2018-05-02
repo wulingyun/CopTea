@@ -16,4 +16,3 @@ This function will return a vector of strings, which is the GO IDs of extracted 
 \description{
 Extract the leaf terms from the specific GO domains.
 }
-

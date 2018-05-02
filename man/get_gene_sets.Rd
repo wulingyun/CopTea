@@ -22,4 +22,3 @@ This function generates the \code{gene.sets} matrix required by enrichment analy
 The name of each gene set is given by the name of corresponding component of \code{gene.lists},
 and assigned to the column of \code{gene.sets}.
 }
-

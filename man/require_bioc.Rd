@@ -12,4 +12,3 @@ require_bioc(pkg.name)
 \description{
 Load a Bioconductor package, automatically install if need.
 }
-

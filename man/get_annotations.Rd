@@ -42,4 +42,3 @@ This function will return a list with the following components:
 Get the annotations needed for functional enrichment analysis from the databases, including GO
 and KEGG/Reactome pathway annotations, gene to protein mapping, protein interaction network.
 }
-

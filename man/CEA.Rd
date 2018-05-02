@@ -34,7 +34,6 @@ and the adapted IMPROVED GREEDY algorithm was used to approximatively solve the 
 }
 \references{
 Duan-Chen Sun, Yin-Liang Liu, Miao Li, Xiang-Sun Zhang, Ling-Yun Wu.
-CEA: A novel combination-based method for gene set functional enrichment analysis
-Manuscript, 2016.
+CEA: Combination-based gene set functional enrichment analysis.
+Scientific reports, under review, 2018.
 }
-

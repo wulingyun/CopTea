@@ -33,4 +33,3 @@ Extract and rank the significant terms with p-values smaller than the given thre
 \seealso{
 \code{\link{get_annotations}}
 }
-
