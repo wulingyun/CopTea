@@ -4,7 +4,8 @@
 \alias{netgen}
 \title{NetGen}
 \usage{
-netgen(annotation, PPI, active_gene, p1, p2, q, alpha = 3, trace = TRUE)
+netgen(annotation, PPI, active_gene, p1, p2, q, alpha = 3,
+  trace = TRUE)
 }
 \arguments{
 \item{annotation}{The input annotation matrix. Each row is a gene and each column is a functional category.}

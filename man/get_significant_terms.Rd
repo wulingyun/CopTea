@@ -4,8 +4,8 @@
 \alias{get_significant_terms}
 \title{Get significant term list}
 \usage{
-get_significant_terms(p.values, term.info, threshold = 0.05, filters = NULL,
-  z.score = NULL, adjust.p = "bonferroni")
+get_significant_terms(p.values, term.info, threshold = 0.05,
+  filters = NULL, z.score = NULL, adjust.p = "bonferroni")
 }
 \arguments{
 \item{p.values}{The vector of p-values.}
