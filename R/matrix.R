@@ -16,9 +16,9 @@
 #' @examples
 #' 
 #' \dontrun{
-#' source("http://bioconductor.org/biocLite.R")
-#' biocLite("org.Hs.eg.db")
-#' library(org.Hs.eg.db)
+#' if (!requireNamespace("BiocManager"))
+#'   install.packages("BiocManager")
+#' BiocManager::install("org.Hs.eg.db")
 #' x <- toMatrix(toTable(org.Hs.egGO2ALLEGS))
 #' }
 #'

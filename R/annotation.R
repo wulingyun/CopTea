@@ -33,6 +33,7 @@
 get_annotations <- function(species, filters = c("GO", "KEGG", "Reactome", "OMIM"),
                             STRING.version = "10", STRING.threshold = 900)
 {
+  require_bioc("AnnotationDbi")
   if (species == "Human") {
     require_bioc("org.Hs.eg.db")
     species.name <- "Homo sapiens"
@@ -255,9 +256,9 @@ get_annotated_genes <- function(anno.matrix, species = "Human", gene.symbol = TR
 #' @examples
 #' 
 #' \dontrun{
-#' source("http://bioconductor.org/biocLite.R")
-#' biocLite("org.Hs.eg.db")
-#' library(org.Hs.eg.db)
+#' if (!requireNamespace("BiocManager"))
+#'   install.packages("BiocManager")
+#' BiocManager::install("org.Hs.eg.db")
 #' x <- get_GO_annotations(org.Hs.egGO2ALLEGS)
 #' }
 #'
@@ -266,6 +267,7 @@ get_annotated_genes <- function(anno.matrix, species = "Human", gene.symbol = TR
 #' @export
 get_GO_annotations <- function(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
 {
+  require_bioc("AnnotationDbi")
   term.table <- AnnotationDbi::toTable(go.map)
   term.table[,1] <- toupper(term.table[,1])
   
@@ -297,6 +299,7 @@ get_GO_annotations <- function(go.map, evidence = "ALL", category = "ALL", gene.
 #' @export
 get_GO_leafs <- function(domains = c("BP", "CC", "MF"))
 {
+  require_bioc("AnnotationDbi")
   require_bioc("GO.db")
   terms <- NULL
   if ("BP" %in% domains) {
@@ -326,8 +329,9 @@ require_bioc <- function(pkg.name)
 {
   if (!requireNamespace(pkg.name, character.only=T, quietly = T))
   {
-    source("http://bioconductor.org/biocLite.R")
-    BiocInstaller::biocLite(pkg.name, suppressUpdates=T, suppressAutoUpdate=T)
+    if (!requireNamespace("BiocManager"))
+      utils::install.packages("BiocManager")
+    BiocManager::install(pkg.name)
     requireNamespace(pkg.name, character.only=T)
   }
 }

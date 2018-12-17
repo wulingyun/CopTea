@@ -98,6 +98,7 @@ id_mapping_to_symbol <- function(ids, species = "Human", warning.unmapped = TRUE
 #' @export
 id_mapping <- function(ids, db, from = 1, to = 2)
 {
+  require_bioc("AnnotationDbi")
   map <- as.matrix(AnnotationDbi::toTable(db))
   ids <- toupper(ids)
   map[, from] <- toupper(map[, from])

@@ -33,7 +33,7 @@ CEA is based on a multi-objective optimization problem,
 and the adapted IMPROVED GREEDY algorithm was used to approximatively solve the problem.
 }
 \references{
-Duan-Chen Sun, Yin-Liang Liu, Miao Li, Xiang-Sun Zhang, Ling-Yun Wu.
+Duanchen Sun, Yinliang Liu, Xiang-Sun Zhang, Ling-Yun Wu.
 CEA: Combination-based gene set functional enrichment analysis.
-Scientific reports, under review, 2018.
+Scientific Reports, 8:13085, 2018.
 }

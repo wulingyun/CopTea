@@ -26,8 +26,8 @@
 #' Each element of the list is a parameter combination result matrix and a combined p-value.
 #' 
 #' @references Duanchen Sun, Yinliang Liu, Xiang-Sun Zhang, Ling-Yun Wu.
-#' NetGen: a novel network-based generative model for gene set functional enrichment analysis.
-#' Manuscript, 2016.
+#' NetGen: a novel network-based probabilistic generative model for gene set functional enrichment analysis.
+#' BMC Systems Biology, 11(Suppl 4):75, 2017.
 #' 
 #' @import Matrix
 #' 

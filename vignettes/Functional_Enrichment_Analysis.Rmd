@@ -3,14 +3,13 @@ title: "Functional Enrichment Analysis"
 author: "Duanchen Sun, Ling-Yun Wu"
 date: '`r Sys.Date()`'
 output:
-  word_document:
-    toc: yes
   pdf_document:
     latex_engine: xelatex
     number_sections: yes
     toc: yes
 vignette: |
-  %\VignetteIndexEntry{Functional Enrichment Analysis} %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Functional Enrichment Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 

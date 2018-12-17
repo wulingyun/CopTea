@@ -30,9 +30,9 @@ This function generates the annotation matrix required by enrichment analysis me
 \examples{
 
 \dontrun{
-source("http://bioconductor.org/biocLite.R")
-biocLite("org.Hs.eg.db")
-library(org.Hs.eg.db)
+if (!requireNamespace("BiocManager"))
+  install.packages("BiocManager")
+BiocManager::install("org.Hs.eg.db")
 x <- get_GO_annotations(org.Hs.egGO2ALLEGS)
 }
 

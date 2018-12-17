@@ -45,6 +45,6 @@ A greedy-based approximate algorithm was peformed to seek for a sub-optimal solu
 }
 \references{
 Duanchen Sun, Yinliang Liu, Xiang-Sun Zhang, Ling-Yun Wu.
-NetGen: a novel network-based generative model for gene set functional enrichment analysis.
-Manuscript, 2016.
+NetGen: a novel network-based probabilistic generative model for gene set functional enrichment analysis.
+BMC Systems Biology, 11(Suppl 4):75, 2017.
 }

@@ -18,9 +18,9 @@
 #'   \item{category}{The identified category set corresponding to the sorted p-values.}
 #'   \item{annotation}{The pre-processed original annotation matrix.}
 #' 
-#' @references Duan-Chen Sun, Yin-Liang Liu, Miao Li, Xiang-Sun Zhang, Ling-Yun Wu.
+#' @references Duanchen Sun, Yinliang Liu, Xiang-Sun Zhang, Ling-Yun Wu.
 #' CEA: Combination-based gene set functional enrichment analysis.
-#' Scientific reports, under review, 2018.
+#' Scientific Reports, 8:13085, 2018.
 #' 
 #' @export
 
@@ -77,7 +77,7 @@ CEA <- function(resultmap, active_gene, d = 0, times = 1, trace = TRUE){
 			function_gene <- names(which(rowSums(M_search[, Category[[i]], drop=FALSE]) > 0))
 			s <- length(function_gene)
 			k <- length(intersect(active_gene,function_gene))				# The intersection set of active gene and a GO term.
-			p_values[i] <- phyper(k-1,s, m-s, p, lower.tail=FALSE)
+			p_values[i] <- stats::phyper(k-1,s, m-s, p, lower.tail=FALSE)
 			
 			cover2 <- colSums(M_search1[UG & !ind_gene, , drop=FALSE])
 			index1 <- which(cover2 == 0)
