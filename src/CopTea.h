@@ -10,10 +10,6 @@ extern "C" {
   void R_init_CopTea(DllInfo *info);
 
 	/* Utils */
-  SEXP RMultiHyper(SEXP _N, SEXP _M, SEXP _K);
-  SEXP PMultiHyper(SEXP _X, SEXP _K, SEXP _M, SEXP _W);
-  SEXP PMultiNom(SEXP _X, SEXP _K, SEXP _M, SEXP _W);
-
   SEXP NE_GetDepths(SEXP _Edges, SEXP _Index, SEXP _Core, SEXP _MaxDepth);
   SEXP NE_CountDepths(SEXP _Depth, SEXP _MaxDepth);
   
