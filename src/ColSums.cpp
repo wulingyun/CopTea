@@ -10,7 +10,7 @@ SEXP NE_ColSums(SEXP _Matrix, SEXP _RowSel)
 
   SEXP _Dim;
   PROTECT(_Dim = GET_DIM(_Matrix));
-  int *Dim = INTEGER_POINTER(AS_INTEGER(_Dim));
+  int *Dim = INTEGER_POINTER(_Dim);
   int nRow = Dim[0];
   int nCol = Dim[1];
 

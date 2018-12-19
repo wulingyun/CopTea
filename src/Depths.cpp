@@ -48,11 +48,12 @@ SEXP NE_GetDepths(SEXP _Edges, SEXP _Index, SEXP _Seed, SEXP _MaxDepth)
   int *Index = INTEGER_POINTER(_Index);
   PROTECT(_Seed = AS_LOGICAL(_Seed));
   int *Seed = LOGICAL_POINTER(_Seed);
-  int MaxDepth = INTEGER_POINTER(AS_INTEGER(_MaxDepth))[0];
+  PROTECT(_MaxDepth = AS_INTEGER(_MaxDepth));
+  int MaxDepth = INTEGER_POINTER(_MaxDepth)[0];
 
   SEXP _nEdges;
 	PROTECT(_nEdges = GET_DIM(_Edges));
-	int nEdges = INTEGER_POINTER(AS_INTEGER(_nEdges))[0];
+	int nEdges = INTEGER_POINTER(_nEdges)[0];
   int nGene = length(_Seed);
 
   SEXP _Depth;
@@ -70,7 +71,8 @@ SEXP NE_CountDepths(SEXP _Depth, SEXP _MaxDepth)
 {
   PROTECT(_Depth = AS_INTEGER(_Depth));
 	int *Depth = INTEGER_POINTER(_Depth);
-  int nCounter = INTEGER_POINTER(AS_INTEGER(_MaxDepth))[0] + 2;
+	PROTECT(_MaxDepth = AS_INTEGER(_MaxDepth));
+  int nCounter = INTEGER_POINTER(_MaxDepth)[0] + 2;
     
   SEXP _Counter;
   PROTECT(_Counter = NEW_INTEGER(nCounter));
