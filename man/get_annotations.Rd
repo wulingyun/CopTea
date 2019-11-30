@@ -4,8 +4,12 @@
 \alias{get_annotations}
 \title{Get annotations from databases}
 \usage{
-get_annotations(species, filters = c("GO", "KEGG", "Reactome", "OMIM"),
-  STRING.version = "10", STRING.threshold = 900)
+get_annotations(
+  species,
+  filters = c("GO", "KEGG", "Reactome", "OMIM"),
+  STRING.version = "10",
+  STRING.threshold = 900
+)
 }
 \arguments{
 \item{species}{A string indicated species name, currently support \code{"Human"}, 

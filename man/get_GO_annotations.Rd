@@ -4,8 +4,7 @@
 \alias{get_GO_annotations}
 \title{Extract GO temrs information from GO annotation}
 \usage{
-get_GO_annotations(go.map, evidence = "ALL", category = "ALL",
-  gene.set = NULL)
+get_GO_annotations(go.map, evidence = "ALL", category = "ALL", gene.set = NULL)
 }
 \arguments{
 \item{go.map}{An object of class "Go3AnnDbBimap".}

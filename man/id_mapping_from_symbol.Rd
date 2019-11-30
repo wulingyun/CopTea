@@ -4,8 +4,7 @@
 \alias{id_mapping_from_symbol}
 \title{Mapping gene symbols to central ids}
 \usage{
-id_mapping_from_symbol(symbols, species = "Human",
-  warning.unmapped = TRUE)
+id_mapping_from_symbol(symbols, species = "Human", warning.unmapped = TRUE)
 }
 \arguments{
 \item{symbols}{The vector of gene symbols.}

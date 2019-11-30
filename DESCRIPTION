@@ -1,5 +1,5 @@
 Package: CopTea
-Version: 0.4-1
+Version: 0.4-2
 Title: Combinatorial OPTimization based Enrichment Analysis
 Description: Provides several combinatorial optimization based enrichment analysis
     tools for biological and medical research.
@@ -15,5 +15,5 @@ VignetteBuilder: knitr
 License: GPL (>= 2)
 BugReports: https://github.com/wulingyun/CopTea/issues
 URL: https://github.com/wulingyun/CopTea
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1
 Encoding: UTF-8
